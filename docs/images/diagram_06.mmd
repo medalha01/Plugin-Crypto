@@ -1,0 +1,34 @@
+graph TD
+    LOADER["native_loader.dart\nloadCrypto()"]
+    DETECT["Detect Platform"]
+    LOADER --> DETECT
+
+    DETECT --> LINUX{"Linux?"}
+    LINUX -->|yes| FIPS_CHECK{"FIPS mode?"}
+    FIPS_CHECK -->|yes| LINUX_FIPS["linux/x86_64_fips/\nlibcrypto.so.4 + libssl.so.4"]
+    FIPS_CHECK -->|no| LINUX_STD["linux/x86_64/\nlibcrypto.so.4 + libssl.so.4"]
+
+    LINUX -->|no| ANDROID{"Android?"}
+    ANDROID -->|yes| ANDROID_LIB["android/src/main/jniLibs/arm64-v8a/\nlibcrypto.so + libssl.so"]
+
+    ANDROID -->|no| IOS_CHECK{"iOS?"}
+    IOS_CHECK -->|yes| IOS_LIB["ios/Assets/openssl/\nlibcrypto.a + libssl.a"]
+
+    IOS_CHECK -->|no| UNSUPPORTED["throw\nUnsupportedError"]
+
+    LINUX_FIPS --> DLOPEN["DynamicLibrary.open()"]
+    LINUX_STD --> DLOPEN
+    ANDROID_LIB --> DLOPEN
+    IOS_LIB --> DLOPEN
+
+    DLOPEN --> BINDINGS["openssl_bindings.dart\n(263 FFI function bindings)"]
+
+    subgraph "FIPS Provider Chain"
+        FIPS_CONF["providers/fipsmodule.cnf"]
+        FIPS_SO["providers/fips.so"]
+        OPENSSL_BIN["openssl binary\n(FIPS-aware)"]
+    end
+
+    LINUX_FIPS -.-> FIPS_CONF
+    LINUX_FIPS -.-> FIPS_SO
+    LINUX_FIPS -.-> OPENSSL_BIN

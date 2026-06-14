@@ -1,0 +1,45 @@
+sequenceDiagram
+    participant App as Flutter App
+    participant API as PluginCryptoAPI
+    participant Ops as CryptoOperations
+    participant AES as AesOperations
+    participant FFI as openssl_bindings
+    participant Native as OpenSSL (libcrypto)
+
+    App->>API: encryptAesGcm(plaintext, key, iv, aad)
+    API->>Ops: encryptAesGcm(plaintext, key, iv, aad)
+    Ops->>AES: encryptGcm(plaintext, key, iv, aad)
+
+    Note over AES: Create EVP_CIPHER_CTX
+    AES->>FFI: EVP_CIPHER_CTX_new()
+    FFI->>Native: EVP_CIPHER_CTX_new
+    Native-->>FFI: ctx
+
+    AES->>FFI: EVP_EncryptInit_ex(ctx, AES-256-GCM, null, key, iv)
+    FFI->>Native: EVP_EncryptInit_ex
+    Native-->>FFI: OK
+
+    opt AAD present
+        AES->>FFI: EVP_EncryptUpdate(ctx, null, null, aad)
+        FFI->>Native: EVP_EncryptUpdate (AAD)
+        Native-->>FFI: OK
+    end
+
+    Note over AES: Encrypt plaintext
+    AES->>FFI: EVP_EncryptUpdate(ctx, ciphertext, len, plaintext)
+    FFI->>Native: EVP_EncryptUpdate
+    Native-->>FFI: bytes_written
+
+    AES->>FFI: EVP_EncryptFinal_ex(ctx, ciphertext+offset, len)
+    FFI->>Native: EVP_EncryptFinal_ex
+    Native-->>FFI: OK
+
+    Note over AES: Extract authentication tag
+    AES->>FFI: EVP_CIPHER_CTX_ctrl(ctx, GET_TAG, 16, tag)
+    FFI->>Native: EVP_CIPHER_CTX_ctrl (GET_TAG)
+    Native-->>FFI: tag (16 bytes)
+
+    AES->>FFI: EVP_CIPHER_CTX_free(ctx)
+    AES-->>Ops: (ciphertext, tag)
+    Ops-->>API: CryptoSuccess(ciphertext, tag)
+    API-->>App: CryptoSuccess(ciphertext, tag)

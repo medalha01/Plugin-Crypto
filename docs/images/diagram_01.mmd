@@ -1,0 +1,41 @@
+graph TD
+    subgraph Aplicação
+        FLUTTER["Flutter App"]
+    end
+
+    subgraph "Plugin Crypto"
+        API["PluginCryptoAPI\n(singleton)"]
+        FACADE["CryptoOperations\n(facade)"]
+        OPS["PluginCryptoOperations\n(implements CryptographicOperations)"]
+        AES["AesOperations"]
+        ASYM["AsymmetricOperations"]
+        CMS["CmsOperations"]
+        X509["X509Operations"]
+    end
+
+    subgraph "FFI Layer"
+        BINDINGS["openssl_bindings.dart\n(263 FFI bindings)"]
+        LOADER["native_loader.dart\n(loadCrypto)"]
+    end
+
+    subgraph "Native Libraries"
+        LIBCRYPTO["libcrypto.so"]
+        LIBSSL["libssl.so"]
+        FIPS["FIPS Provider\n(fips.so)"]
+    end
+
+    FLUTTER --> API
+    API --> FACADE
+    FACADE --> OPS
+    OPS --> AES
+    OPS --> ASYM
+    OPS --> CMS
+    OPS --> X509
+    AES --> BINDINGS
+    ASYM --> BINDINGS
+    CMS --> BINDINGS
+    X509 --> BINDINGS
+    BINDINGS --> LOADER
+    LOADER --> LIBCRYPTO
+    LOADER --> LIBSSL
+    LIBCRYPTO -.-> FIPS

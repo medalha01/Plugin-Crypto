@@ -1,0 +1,43 @@
+classDiagram
+    class CryptoResult~T~ {
+        <<sealed>>
+    }
+
+    class CryptoSuccess~T~ {
+        +T data
+        +CryptoSuccess(T data)
+        +fold(success, failure) R
+        +map(R Function(T)) CryptoResult~R~
+        +getOrElse(T defaultValue) T
+    }
+
+    class CryptoFailure~T~ {
+        +CryptoErrorCode code
+        +String message
+        +String details
+        +CryptoFailure(code, message, details)
+        +fold(success, failure) R
+        +map(R Function(T)) CryptoResult~R~
+        +getOrElse(T defaultValue) T
+    }
+
+    class CryptoErrorCode {
+        <<enumeration>>
+        UNKNOWN
+        KEY_GENERATION_FAILED
+        ENCRYPTION_FAILED
+        DECRYPTION_FAILED
+        SIGNING_FAILED
+        VERIFICATION_FAILED
+        CERTIFICATE_PARSE_ERROR
+        CHAIN_VERIFICATION_FAILED
+        REVOCATION_CHECK_FAILED
+        FFI_ERROR
+        UNSUPPORTED_ALGORITHM
+        INVALID_KEY_SIZE
+        INVALID_PARAMETER
+    }
+
+    CryptoResult~T~ <|-- CryptoSuccess~T~
+    CryptoResult~T~ <|-- CryptoFailure~T~
+    CryptoFailure~T~ --> CryptoErrorCode : code

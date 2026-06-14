@@ -1,0 +1,41 @@
+sequenceDiagram
+    participant App as Flutter App
+    participant API as PluginCryptoAPI
+    participant Ops as CryptoOperations
+    participant Factory as KeyCreatorFactory
+    participant Creator as KeyCreator
+    participant FFI as openssl_bindings
+    participant Native as OpenSSL (libcrypto)
+
+    App->>API: createKeyPair(algorithm, params)
+    API->>Ops: createKeyPair(algorithm, params)
+    Ops->>Factory: create(KeySpec)
+    Factory->>Factory: evaluate algorithm type
+    alt RSA
+        Factory->>Creator: RsaKeyCreator(params)
+    else EC
+        Factory->>Creator: EcKeyCreator(params)
+    else ML-KEM
+        Factory->>Creator: MlKemKeyCreator(params)
+    else ML-DSA
+        Factory->>Creator: MlDsaKeyCreator(params)
+    end
+    Factory-->>Ops: KeyCreator instance
+
+    Ops->>Creator: generate()
+    Creator->>Creator: allocate EVP_PKEY_CTX
+    Creator->>FFI: EVP_PKEY_keygen_init(ctx)
+    FFI->>Native: EVP_PKEY_keygen_init
+    Native-->>FFI: OK
+    FFI-->>Creator: OK
+
+    Creator->>Creator: set keygen params
+    Creator->>FFI: EVP_PKEY_keygen(ctx, &pkey)
+    FFI->>Native: EVP_PKEY_keygen
+    Native-->>FFI: key material
+    FFI-->>Creator: EVP_PKEY pointer
+
+    Creator->>Creator: extract public/private bytes
+    Creator-->>Ops: CryptoSuccess(KeyPair)
+    Ops-->>API: CryptoSuccess(KeyPair)
+    API-->>App: CryptoSuccess(KeyPair)

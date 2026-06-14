@@ -1,0 +1,53 @@
+# PluginCrypto test configuration for `flutter test`.
+#
+# This file is automatically picked up by the Flutter test runner.
+# See: https://dart.dev/guides/testing/configure-tests
+
+# ── Tag definitions ──────────────────────────────────────────────────────
+#
+# Tags control which tests are executed.  By default the `slow`, `stress`,
+# and `concurrent` tags are skipped.  Pass `--tags` to include them:
+#
+#   flutter test --tags slow
+#   flutter test --run-skipped          # run everything including tagged
+#
+
+tags:
+  # Crypto operations that take significant time (large key gen, CMS,
+  # 1 MB hash loops, etc.).  Skipped by default for fast CI feedback.
+  slow:
+    skip: "Slow test — run with --tags slow to include"
+    skip_reason: "Opt-in tag; use --tags slow to execute"
+
+  # High-iteration stress tests (1 000+ iterations).  Skipped by default.
+  stress:
+    skip: "Stress test — run with --tags stress to include"
+    skip_reason: "Opt-in tag; use --tags stress to execute"
+
+  # Tests that may interfere with each other when run concurrently.
+  # Skipped by default; CI should run them sequentially in a separate job.
+  concurrent:
+    skip: "Concurrent-sensitive test — run with --tags concurrent to include"
+    skip_reason: "Opt-in tag; use --tags concurrent to execute"
+
+  # Metrics collection tests (micro-benchmarks, security validation).
+  # Only run with --tags metrics --run-skipped and set TCC_METRICS_OUTPUT env var.
+  metrics:
+    skip: "Metrics collection test — run with --tags metrics --run-skipped to include"
+
+# ── Global timeout ───────────────────────────────────────────────────────
+#
+# 2 minutes per test case gives generous headroom for key generation and
+# large-payload operations while still catching genuine hangs.
+timeout: 2m
+
+# ── Platform ─────────────────────────────────────────────────────────────
+#
+# Tests must run on Linux (or Android emulator) because PluginCrypto
+# dynamically links OpenSSL native libraries via dart:ffi.
+platforms: [vm]
+
+# ── Reporter ─────────────────────────────────────────────────────────────
+#
+# Use the expanded reporter so CI logs include each test name.
+reporter: expanded

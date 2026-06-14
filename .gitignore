@@ -1,0 +1,54 @@
+# ============================================================================
+# PluginCrypto — Clean Repository .gitignore
+# ============================================================================
+
+# ── Flutter / Dart build artifacts ──────────────────────────────────────────
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# ── Generated symlinks ──────────────────────────────────────────────────────
+**/ephemeral/
+
+# ── Gradle cache ────────────────────────────────────────────────────────────
+.gradle/
+
+# ── Coverage ────────────────────────────────────────────────────────────────
+coverage/
+
+# ── OpenSSL build artifacts (large, extracted from tarballs) ────────────────
+_extracted/
+*.tar.gz
+*.tar.xz
+*.tar.bz2
+
+# ── Temporary / backup files ────────────────────────────────────────────────
+*.bak
+*.tmp
+*.swp
+*~
+.*.swp
+
+# ── IDE files ───────────────────────────────────────────────────────────────
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# ── OS files ────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Log files ────────────────────────────────────────────────────────────────
+*.log
+
+# ── FIPS build directory (separate build) ───────────────────────────────────
+plugin_crypto/native/linux/x86_64_fips/
+
+# ── Cleaning/temp scripts (not part of the project) ─────────────────────────
+_clean_comments.py
+_translate_docs.py

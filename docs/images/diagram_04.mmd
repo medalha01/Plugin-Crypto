@@ -1,0 +1,52 @@
+sequenceDiagram
+    participant App as Flutter App
+    participant API as PluginCryptoAPI
+    participant Ops as CryptoOperations
+    participant Verifier as OpensslChainVerifier
+    participant StoreFactory as X509StoreFactory
+    participant FFI as openssl_bindings
+    participant Native as OpenSSL (libcrypto)
+
+    App->>API: verifyChain(leaf, intermediates, root)
+    API->>Ops: verifyChain(leaf, intermediates, root)
+    Ops->>Verifier: verify(endEntity, chain, trustAnchor)
+
+    Verifier->>StoreFactory: createStore(trustAnchor, intermediates)
+    StoreFactory->>FFI: X509_STORE_new()
+    FFI->>Native: X509_STORE_new
+    Native-->>FFI: X509_STORE pointer
+    FFI-->>StoreFactory: store
+
+    StoreFactory->>FFI: X509_STORE_add_cert(store, trustAnchor)
+    FFI->>Native: X509_STORE_add_cert
+    Native-->>FFI: OK
+
+    loop for each intermediate
+        StoreFactory->>FFI: X509_STORE_add_cert(store, intermediate)
+        FFI->>Native: X509_STORE_add_cert
+        Native-->>FFI: OK
+    end
+    StoreFactory-->>Verifier: populated X509_STORE
+
+    Verifier->>FFI: X509_STORE_CTX_new()
+    FFI->>Native: X509_STORE_CTX_new
+    Native-->>FFI: context
+
+    Verifier->>FFI: X509_STORE_CTX_init(ctx, store, leaf, chain)
+    FFI->>Native: X509_STORE_CTX_init
+
+    Verifier->>FFI: X509_verify_cert(ctx)
+    FFI->>Native: X509_verify_cert
+    Native-->>FFI: verification result
+    FFI-->>Verifier: result code
+
+    Verifier->>Verifier: evaluate result
+    alt success
+        Verifier-->>Ops: CryptoSuccess(valid)
+    else failure
+        Verifier->>FFI: X509_STORE_CTX_get_error(ctx)
+        FFI-->>Verifier: error code
+        Verifier-->>Ops: CryptoFailure(error)
+    end
+    Ops-->>API: result
+    API-->>App: result

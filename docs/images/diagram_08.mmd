@@ -1,0 +1,64 @@
+graph TD
+    subgraph "Plugin Crypto — Unit Tests (40 zones)"
+        UT_CRYPTO["crypto/ tests"]
+        UT_AES["AES operations"]
+        UT_ASYM["Asymmetric operations"]
+        UT_CMS["CMS/PKCS#7"]
+        UT_X509["X.509 certificates"]
+        UT_FFI["FFI bindings (mocked)"]
+        UT_FLOWS["flows/ (key creation, cert, chain, signing, revocation)"]
+        UT_MODELS["models/ (CryptoResult, key types)"]
+        UT_METRICS["metrics/ (collector, zeroization)"]
+    end
+
+    subgraph "tcc_test_app — Integration Tests (177 tests)"
+        IT_MAIN["crypto_integration_test.dart\n(52 tests)"]
+        IT_FLOWS["crypto_flows_integration_test.dart\n(21 tests)"]
+        IT_ADV["crypto_e2e_adversarial_test.dart\n(31 tests)"]
+        IT_HASH["crypto_e2e_hash_pipeline_test.dart\n(14 tests)"]
+        IT_PIPE["crypto_e2e_pipeline_test.dart\n(18 tests)"]
+        IT_PKI["crypto_e2e_pki_pipeline_test.dart\n(17 tests)"]
+        IT_PQ["crypto_e2e_pq_test.dart\n(22 tests)"]
+        IT_PQ_FIPS["crypto_e2e_pq_fips_test.dart\n(2 tests)"]
+    end
+
+    subgraph "CI Pipeline Tags"
+        TAG_SMOKE["@smoke"]
+        TAG_UNIT["@unit"]
+        TAG_INTEGRATION["@integration"]
+        TAG_E2E["@e2e"]
+        TAG_ADVERSARIAL["@adversarial"]
+        TAG_PQ["@post-quantum"]
+        TAG_FIPS["@fips"]
+    end
+
+    UT_CRYPTO --> UT_AES
+    UT_CRYPTO --> UT_ASYM
+    UT_CRYPTO --> UT_CMS
+    UT_CRYPTO --> UT_X509
+    UT_CRYPTO --> UT_FFI
+    UT_CRYPTO --> UT_FLOWS
+    UT_CRYPTO --> UT_MODELS
+    UT_CRYPTO --> UT_METRICS
+
+    IT_MAIN --> TAG_INTEGRATION
+    IT_FLOWS --> TAG_INTEGRATION
+    IT_ADV --> TAG_ADVERSARIAL
+    IT_HASH --> TAG_E2E
+    IT_PIPE --> TAG_E2E
+    IT_PKI --> TAG_E2E
+    IT_PQ --> TAG_PQ
+    IT_PQ_FIPS --> TAG_FIPS
+
+    UT_CRYPTO --> TAG_UNIT
+    UT_CRYPTO --> TAG_SMOKE
+    IT_MAIN --> TAG_SMOKE
+    IT_FLOWS --> TAG_SMOKE
+
+    TAG_SMOKE -.-> CI["CI on every commit"]
+    TAG_UNIT -.-> CI
+    TAG_INTEGRATION -.-> CI_PUSH["CI on branch push"]
+    TAG_E2E -.-> CI_PR["CI on PR"]
+    TAG_ADVERSARIAL -.-> CI_SCHEDULE["CI nightly"]
+    TAG_PQ -.-> CI_SCHEDULE
+    TAG_FIPS -.-> CI_SCHEDULE

@@ -1,0 +1,1835 @@
+{
+  "schema_version": "1.2.0",
+  "generated_at": "2026-06-05T12:49:25.702912Z",
+  "project_name": "plugin_crypto",
+  "timing": {
+    "operations": [
+      {
+        "operation": "sha256",
+        "category": "hash",
+        "input_size_bytes": 0,
+        "cold_ms": 2.776,
+        "warm_ms": 0.0024,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha256",
+        "category": "hash",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.022,
+        "warm_ms": 0.0028000000000000004,
+        "throughput_mbps": 348.7723214285714,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha256",
+        "category": "hash",
+        "input_size_bytes": 65536,
+        "cold_ms": 1.059,
+        "warm_ms": 0.03524,
+        "throughput_mbps": 1773.5527809307605,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha256",
+        "category": "hash",
+        "input_size_bytes": 1048576,
+        "cold_ms": 1.219,
+        "warm_ms": 0.53836,
+        "throughput_mbps": 1857.493127275429,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha512",
+        "category": "hash",
+        "input_size_bytes": 0,
+        "cold_ms": 0.031,
+        "warm_ms": 0.00332,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha512",
+        "category": "hash",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.03,
+        "warm_ms": 0.00296,
+        "throughput_mbps": 329.9197635135135,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha512",
+        "category": "hash",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.162,
+        "warm_ms": 0.07576,
+        "throughput_mbps": 824.973600844773,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha512",
+        "category": "hash",
+        "input_size_bytes": 1048576,
+        "cold_ms": 1.135,
+        "warm_ms": 1.16184,
+        "throughput_mbps": 860.7037113544034,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_256",
+        "category": "hash",
+        "input_size_bytes": 0,
+        "cold_ms": 0.033,
+        "warm_ms": 0.0034799999999999996,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_256",
+        "category": "hash",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.054,
+        "warm_ms": 0.0064,
+        "throughput_mbps": 152.587890625,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_256",
+        "category": "hash",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.161,
+        "warm_ms": 0.1492,
+        "throughput_mbps": 418.9008042895442,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_256",
+        "category": "hash",
+        "input_size_bytes": 1048576,
+        "cold_ms": 1.99,
+        "warm_ms": 2.02948,
+        "throughput_mbps": 492.73705579754426,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_512",
+        "category": "hash",
+        "input_size_bytes": 0,
+        "cold_ms": 0.03,
+        "warm_ms": 0.00536,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_512",
+        "category": "hash",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.053,
+        "warm_ms": 0.0098,
+        "throughput_mbps": 99.64923469387756,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_512",
+        "category": "hash",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.376,
+        "warm_ms": 0.19635999999999998,
+        "throughput_mbps": 318.2929313505806,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "sha3_512",
+        "category": "hash",
+        "input_size_bytes": 1048576,
+        "cold_ms": 3.554,
+        "warm_ms": 3.90004,
+        "throughput_mbps": 256.4076265884452,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "aes128CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 16,
+        "cold_ms": 0.046,
+        "warm_ms": 0.002426666666666667,
+        "throughput_mbps": 6.287962525755494,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 16,
+        "cold_ms": 0.339,
+        "warm_ms": 0.00508,
+        "throughput_mbps": 3.0036986343503935,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.054,
+        "warm_ms": 0.0025066666666666666,
+        "throughput_mbps": 389.5861037234043,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.011,
+        "warm_ms": 0.00264,
+        "throughput_mbps": 369.9100378787879,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.042,
+        "warm_ms": 0.0041333333333333335,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.026,
+        "warm_ms": 0.004906666666666667,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.052,
+        "warm_ms": 0.0023599999999999997,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.02,
+        "warm_ms": 0.0016666666666666668,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 16,
+        "cold_ms": 1.667,
+        "warm_ms": 0.00128,
+        "throughput_mbps": 11.920928955078125,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 16,
+        "cold_ms": 0.009,
+        "warm_ms": 0.00116,
+        "throughput_mbps": 13.154128502155174,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.06,
+        "warm_ms": 0.0016666666666666668,
+        "throughput_mbps": 585.9374999999999,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.012,
+        "warm_ms": 0.0016266666666666667,
+        "throughput_mbps": 600.3457991803278,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.041,
+        "warm_ms": 0.002013333333333333,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.021,
+        "warm_ms": 0.0013066666666666667,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.092,
+        "warm_ms": 0.0012666666666666666,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256CbcDecrypt",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.015,
+        "warm_ms": 0.0009066666666666667,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 16,
+        "cold_ms": 0.188,
+        "warm_ms": 0.002266666666666667,
+        "throughput_mbps": 6.731818704044117,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 16,
+        "cold_ms": 0.162,
+        "warm_ms": 0.003586666666666667,
+        "throughput_mbps": 4.254309218169145,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.03,
+        "warm_ms": 0.002,
+        "throughput_mbps": 488.28125,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.013,
+        "warm_ms": 0.0017466666666666668,
+        "throughput_mbps": 559.1006679389312,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.015,
+        "warm_ms": 0.0024533333333333334,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 65536,
+        "cold_ms": 1.436,
+        "warm_ms": 0.00292,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.038,
+        "warm_ms": 0.002373333333333333,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes128GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.015,
+        "warm_ms": 0.0016933333333333334,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 16,
+        "cold_ms": 0.044,
+        "warm_ms": 0.0026,
+        "throughput_mbps": 5.868765024038463,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 16,
+        "cold_ms": 0.02,
+        "warm_ms": 0.002813333333333333,
+        "throughput_mbps": 5.423740188092418,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 1024,
+        "cold_ms": 3.089,
+        "warm_ms": 0.00568,
+        "throughput_mbps": 171.93001760563382,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 1024,
+        "cold_ms": 0.028,
+        "warm_ms": 0.005746666666666666,
+        "throughput_mbps": 169.93546983758702,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.023,
+        "warm_ms": 0.026173333333333333,
+        "throughput_mbps": 2387.9266428935302,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 65536,
+        "cold_ms": 0.04,
+        "warm_ms": 0.0020933333333333333,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmEncrypt",
+        "category": "aead",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.028,
+        "warm_ms": 0.0033066666666666665,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "aes256GcmDecrypt",
+        "category": "aead",
+        "input_size_bytes": 1048576,
+        "cold_ms": 0.258,
+        "warm_ms": 0.0011733333333333333,
+        "throughput_mbps": 10000.0,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "generateRsaKeyPair_2048",
+        "category": "keygen",
+        "input_size_bytes": 0,
+        "cold_ms": 34.664,
+        "warm_ms": 31.776,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 5
+      },
+      {
+        "operation": "generateRsaKeyPair_4096",
+        "category": "keygen",
+        "input_size_bytes": 0,
+        "cold_ms": 981.979,
+        "warm_ms": 514.0123333333333,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 3
+      },
+      {
+        "operation": "rsaSign_sha256",
+        "category": "sign",
+        "input_size_bytes": 32,
+        "cold_ms": 3.776,
+        "warm_ms": 0.7657200000000001,
+        "throughput_mbps": 0.03985474863527137,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "rsaVerify_sha256",
+        "category": "verify",
+        "input_size_bytes": 32,
+        "cold_ms": 4.698,
+        "warm_ms": 0.032080000000000004,
+        "throughput_mbps": 0.9512960762157106,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "rsaEncrypt",
+        "category": "asymmetric",
+        "input_size_bytes": 32,
+        "cold_ms": 1.542,
+        "warm_ms": 0.03168,
+        "throughput_mbps": 0.9633073903093434,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "rsaDecrypt",
+        "category": "asymmetric",
+        "input_size_bytes": 256,
+        "cold_ms": 4.251,
+        "warm_ms": 0.85812,
+        "throughput_mbps": 0.28450639187992355,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "generateEcKeyPair_prime256v1",
+        "category": "keygen",
+        "input_size_bytes": 0,
+        "cold_ms": 1.846,
+        "warm_ms": 0.18319999999999997,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 10
+      },
+      {
+        "operation": "generateEcKeyPair_secp384r1",
+        "category": "keygen",
+        "input_size_bytes": 0,
+        "cold_ms": 1.12,
+        "warm_ms": 0.6176999999999999,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 10
+      },
+      {
+        "operation": "generateEcKeyPair_secp521r1",
+        "category": "keygen",
+        "input_size_bytes": 0,
+        "cold_ms": 2.295,
+        "warm_ms": 1.6912000000000003,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 10
+      },
+      {
+        "operation": "ecSign_prime256v1",
+        "category": "sign",
+        "input_size_bytes": 32,
+        "cold_ms": 0.201,
+        "warm_ms": 0.06214666666666666,
+        "throughput_mbps": 0.49105736094722163,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "ecVerify_prime256v1",
+        "category": "verify",
+        "input_size_bytes": 32,
+        "cold_ms": 0.27,
+        "warm_ms": 0.07170666666666667,
+        "throughput_mbps": 0.4255891333906657,
+        "iterations_warm": 75
+      },
+      {
+        "operation": "cmsSign_ec",
+        "category": "sign",
+        "input_size_bytes": 256,
+        "cold_ms": 2.36,
+        "warm_ms": 0.09484,
+        "throughput_mbps": 2.5742368726275835,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "cmsVerify_ec",
+        "category": "verify",
+        "input_size_bytes": 256,
+        "cold_ms": 1.759,
+        "warm_ms": 0.10492000000000001,
+        "throughput_mbps": 2.3269217022493325,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "cmsSign_rsa",
+        "category": "sign",
+        "input_size_bytes": 256,
+        "cold_ms": 1.122,
+        "warm_ms": 0.9233199999999999,
+        "throughput_mbps": 0.264416047524152,
+        "iterations_warm": 25
+      },
+      {
+        "operation": "cmsVerify_rsa",
+        "category": "verify",
+        "input_size_bytes": 256,
+        "cold_ms": 0.232,
+        "warm_ms": 0.1106,
+        "throughput_mbps": 2.207419755877034,
+        "iterations_warm": 25
+      }
+    ],
+    "crypto_api_load_ms": 0.0,
+    "total_benchmark_time_ms": 8401.913,
+    "histograms": [
+      {
+        "operation": "sha256",
+        "category": "hash",
+        "input_size_bytes": 1048576,
+        "sample_count": 25,
+        "min_ms": 0.519,
+        "p5_ms": 0.5204,
+        "p25_ms": 0.536,
+        "median_ms": 0.549,
+        "p75_ms": 0.575,
+        "p95_ms": 0.5968,
+        "p99_ms": 0.6065999999999999,
+        "max_ms": 0.609,
+        "mean_ms": 0.5561999999999999,
+        "stddev_ms": 0.02479677398372616
+      },
+      {
+        "operation": "aes128CbcEncrypt",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "sample_count": 25,
+        "min_ms": 1.269,
+        "p5_ms": 1.271,
+        "p25_ms": 1.32,
+        "median_ms": 1.385,
+        "p75_ms": 1.662,
+        "p95_ms": 2.663799999999999,
+        "p99_ms": 2.9981199999999992,
+        "max_ms": 3.073,
+        "mean_ms": 1.6112000000000004,
+        "stddev_ms": 0.4600725160232896
+      }
+    ],
+    "raw_samples": [
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 0,
+        "elapsed_ms": 2.761,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 1,
+        "elapsed_ms": 1.432,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 2,
+        "elapsed_ms": 1.385,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 3,
+        "elapsed_ms": 1.635,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 4,
+        "elapsed_ms": 1.662,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 5,
+        "elapsed_ms": 1.546,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 6,
+        "elapsed_ms": 1.308,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 7,
+        "elapsed_ms": 1.373,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 8,
+        "elapsed_ms": 1.38,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 9,
+        "elapsed_ms": 1.349,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 10,
+        "elapsed_ms": 1.271,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 11,
+        "elapsed_ms": 1.269,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 12,
+        "elapsed_ms": 1.349,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 13,
+        "elapsed_ms": 1.777,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 14,
+        "elapsed_ms": 1.478,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 15,
+        "elapsed_ms": 1.603,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 16,
+        "elapsed_ms": 1.754,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 17,
+        "elapsed_ms": 2.275,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 18,
+        "elapsed_ms": 3.073,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 19,
+        "elapsed_ms": 2.059,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 20,
+        "elapsed_ms": 1.313,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 21,
+        "elapsed_ms": 1.287,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 22,
+        "elapsed_ms": 1.32,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 23,
+        "elapsed_ms": 1.35,
+        "is_warmup": false
+      },
+      {
+        "operation": "aes128CbcEncrypt_1MB_diag",
+        "category": "cipher",
+        "input_size_bytes": 1048576,
+        "phase": "warm",
+        "sample_index": 24,
+        "elapsed_ms": 1.271,
+        "is_warmup": false
+      }
+    ],
+    "category_summaries": [
+      {
+        "category": "hash",
+        "operation_count": 16,
+        "total_measurements": 400,
+        "total_warm_time_ms": 8.1228,
+        "total_cold_time_ms": 12.684999999999999,
+        "mean_throughput_mbps": 483.3744280432777,
+        "max_throughput_mbps": 1857.493127275429,
+        "min_throughput_mbps": 0.0,
+        "weighted_throughput_mbps": 864.3192686513004
+      },
+      {
+        "category": "cipher",
+        "operation_count": 16,
+        "total_measurements": 1200,
+        "total_warm_time_ms": 0.03694666666666666,
+        "total_cold_time_ms": 2.507,
+        "mean_throughput_mbps": 5123.759134962491,
+        "max_throughput_mbps": 10000.0,
+        "min_throughput_mbps": 3.0036986343503935,
+        "weighted_throughput_mbps": 9991.120723456279
+      },
+      {
+        "category": "aead",
+        "operation_count": 16,
+        "total_measurements": 1200,
+        "total_warm_time_ms": 0.06862666666666667,
+        "total_cold_time_ms": 5.426999999999999,
+        "mean_throughput_mbps": 4612.465792588127,
+        "max_throughput_mbps": 10000.0,
+        "min_throughput_mbps": 4.254309218169145,
+        "weighted_throughput_mbps": 9879.155062778418
+      },
+      {
+        "category": "keygen",
+        "operation_count": 5,
+        "total_measurements": 38,
+        "total_warm_time_ms": 548.2804333333333,
+        "total_cold_time_ms": 1021.904,
+        "mean_throughput_mbps": 0.0,
+        "max_throughput_mbps": 0.0,
+        "min_throughput_mbps": 0.0,
+        "weighted_throughput_mbps": 0.0
+      },
+      {
+        "category": "sign",
+        "operation_count": 4,
+        "total_measurements": 150,
+        "total_warm_time_ms": 1.8460266666666667,
+        "total_cold_time_ms": 7.459,
+        "mean_throughput_mbps": 0.8423912574335571,
+        "max_throughput_mbps": 2.5742368726275835,
+        "min_throughput_mbps": 0.03985474863527137,
+        "weighted_throughput_mbps": 1.2911186372664654
+      },
+      {
+        "category": "verify",
+        "operation_count": 4,
+        "total_measurements": 150,
+        "total_warm_time_ms": 0.3193066666666667,
+        "total_cold_time_ms": 6.9590000000000005,
+        "mean_throughput_mbps": 1.4778066669331857,
+        "max_throughput_mbps": 2.3269217022493325,
+        "min_throughput_mbps": 0.4255891333906657,
+        "weighted_throughput_mbps": 2.0917564930342945
+      },
+      {
+        "category": "asymmetric",
+        "operation_count": 2,
+        "total_measurements": 50,
+        "total_warm_time_ms": 0.8898,
+        "total_cold_time_ms": 5.793,
+        "mean_throughput_mbps": 0.6239068910946335,
+        "max_throughput_mbps": 0.9633073903093434,
+        "min_throughput_mbps": 0.28450639187992355,
+        "weighted_throughput_mbps": 0.35992872503874795
+      }
+    ],
+    "cipher_suites": []
+  },
+  "memory": {
+    "baseline_rss_kb": 146124,
+    "after_api_load_rss_kb": 157644,
+    "peak_rss_kb": 164060,
+    "after_stress_rss_kb": 162908,
+    "final_rss_kb": 164060,
+    "rss_delta_kb": 17936,
+    "leak_detected": false,
+    "per_operation_allocations": {},
+    "notes": "RSS sampling via ProcessInfo.currentRss (Linux). Raw samples are collected in bytes, converted to KB in MemoryMetrics report fields."
+  },
+  "throughput": {
+    "sha256_mbps": 1857.493127275429,
+    "sha384_mbps": 0.0,
+    "sha512_mbps": 860.7037113544034,
+    "sha3_256_mbps": 492.73705579754426,
+    "sha3_512_mbps": 256.4076265884452,
+    "aes128_cbc_encrypt_mbps": 10000.0,
+    "aes128_cbc_decrypt_mbps": 10000.0,
+    "aes256_cbc_encrypt_mbps": 10000.0,
+    "aes256_cbc_decrypt_mbps": 10000.0,
+    "aes128_gcm_encrypt_mbps": 10000.0,
+    "aes128_gcm_decrypt_mbps": 10000.0,
+    "aes256_gcm_encrypt_mbps": 10000.0,
+    "aes256_gcm_decrypt_mbps": 10000.0,
+    "rsa_2048_keygen_ops_per_min": 1730.9023771059312,
+    "rsa_4096_keygen_ops_per_min": 61.1011029767439,
+    "ec_prime256v1_keygen_ops_per_min": 32502.708559046587,
+    "ec_secp384r1_keygen_ops_per_min": 53571.428571428565,
+    "ec_secp521r1_keygen_ops_per_min": 26143.790849673205,
+    "rsa_sign_per_sec": 1305.9604032805723,
+    "rsa_verify_per_sec": 31172.069825436403,
+    "ec_sign_per_sec": 16090.967603518558,
+    "ec_verify_per_sec": 13945.704722945333,
+    "total_bytes_processed": 13383200
+  },
+  "security": {
+    "entropy_random_bytes_1024": 7.981274544119893,
+    "entropy_passed": true,
+    "chi_squared": 254.3872000000003,
+    "chi_squared_p_value": 0.510824261405349,
+    "chi_squared_passed": true,
+    "rsa_key_uniqueness_rate": 1.0,
+    "ec_key_uniqueness_rate": 1.0,
+    "signature_nondeterminism_rsa": false,
+    "signature_nondeterminism_ecdsa": true,
+    "iv_uniqueness_rate": 1.0,
+    "gcm_tag_auth_enforced": true,
+    "gcm_aad_binding_enforced": true,
+    "cross_key_rejection": true,
+    "summary": "All security checks passed.",
+    "safe_curve_checklist": [
+      {
+        "curve_name": "prime256v1",
+        "field_size_bits": 256,
+        "has_prime_order": true,
+        "cofactor_is_one": true,
+        "embedding_degree": 0,
+        "embedding_degree_safe": true,
+        "twist_secure": true,
+        "twist_order_checked": false,
+        "notes": "NIST prime256v1 (256-bit): order is prime 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551, cofactor h=1, embedding degree k=>500 (astronomically large) (well above 100 threshold), twist is secure per Bernstein 2001 and NIST SP 800-186 Appendix D. Twist order verification requires EC_GROUP_get_curve/EC_POINT arithmetic not exposed in current FFI bindings."
+      },
+      {
+        "curve_name": "secp384r1",
+        "field_size_bits": 384,
+        "has_prime_order": true,
+        "cofactor_is_one": true,
+        "embedding_degree": 0,
+        "embedding_degree_safe": true,
+        "twist_secure": true,
+        "twist_order_checked": false,
+        "notes": "NIST secp384r1 (384-bit): order is prime 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973, cofactor h=1, embedding degree k=>500 (astronomically large) (well above 100 threshold), twist is secure per Bernstein 2001 and NIST SP 800-186 Appendix D. Twist order verification requires EC_GROUP_get_curve/EC_POINT arithmetic not exposed in current FFI bindings."
+      },
+      {
+        "curve_name": "secp521r1",
+        "field_size_bits": 521,
+        "has_prime_order": true,
+        "cofactor_is_one": true,
+        "embedding_degree": 0,
+        "embedding_degree_safe": true,
+        "twist_secure": true,
+        "twist_order_checked": false,
+        "notes": "NIST secp521r1 (521-bit): order is prime 0x01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409, cofactor h=1, embedding degree k=>500 (astronomically large) (well above 100 threshold), twist is secure per Bernstein 2001 and NIST SP 800-186 Appendix D. Twist order verification requires EC_GROUP_get_curve/EC_POINT arithmetic not exposed in current FFI bindings."
+      }
+    ],
+    "kat_summaries": []
+  },
+  "resource": {
+    "total_suite_time_ms": 9417.086,
+    "per_zone_duration_ms": {},
+    "slowest_tests": [
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 3649
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1690
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 408
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 368
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 265
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 212
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 190
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 179
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 137
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 124
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 104
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 92
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 65
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 63
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 57
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 30
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 27
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 26
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 20
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 14
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 14
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 13
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 12
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 12
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 12
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 10
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 10
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 9
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 9
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 4
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 4
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 4
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 3
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 2
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 2
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 2
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      }
+    ],
+    "fastest_tests": [
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 0
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 2
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 2
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 2
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 3
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 4
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 4
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 4
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 5
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 6
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 7
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 8
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 9
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 9
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 10
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 10
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 12
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 12
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 12
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 13
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 14
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 14
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 20
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 26
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 27
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 30
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 57
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 63
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 65
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 92
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 104
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 124
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 137
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 179
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 190
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 212
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 265
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 368
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 408
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 1690
+      },
+      {
+        "name": "benchmark",
+        "status": "passed",
+        "duration_ms": 3649
+      }
+    ],
+    "total_tests_run": 74,
+    "total_tests_passed": 74,
+    "total_tests_failed": 0,
+    "total_tests_skipped": 0,
+    "native_load_time_ms": 0.0,
+    "open_ssl_version": "OpenSSL 4.0.0 14 Apr 2026",
+    "dart_version": "3.11.5",
+    "platform_os": "linux",
+    "processor_count": 16,
+    "ld_library_path": "/mnt/c/Users/hiper/Workstation/TCC/plugin_crypto/native/linux/x86_64"
+  },
+  "coverage": {
+    "coverage_available": false,
+    "overall_line_coverage_pct": 0.0,
+    "per_file": [],
+    "files_above_80pct": 0,
+    "files_below_50pct": 0,
+    "api_methods_total": 0,
+    "api_methods_tested": 0,
+    "ffi_bindings_total": 0,
+    "ffi_bindings_exercised": 0,
+    "notes": "lcov.info not found. Run with --coverage to generate."
+  },
+  "cipher_suite_comparison": {
+    "per_cipher": [
+      {
+        "cipher_name": "AES-256-GCM",
+        "encrypt_mbps": 718.4011264529662,
+        "decrypt_mbps": 795.456353309894,
+        "hw_accelerated": false,
+        "key_size_bits": 256,
+        "block_size_bytes": 16,
+        "throughput_ratio": 0.9031307921090818,
+        "comparison_rank": 1
+      },
+      {
+        "cipher_name": "AES-128-GCM",
+        "encrypt_mbps": 624.8828344685371,
+        "decrypt_mbps": 786.1635220125786,
+        "hw_accelerated": false,
+        "key_size_bits": 128,
+        "block_size_bytes": 16,
+        "throughput_ratio": 0.7948509654439793,
+        "comparison_rank": 2
+      },
+      {
+        "cipher_name": "AES-128-CBC",
+        "encrypt_mbps": 495.4222979667869,
+        "decrypt_mbps": 720.4091924212953,
+        "hw_accelerated": false,
+        "key_size_bits": 128,
+        "block_size_bytes": 16,
+        "throughput_ratio": 0.687695691807697,
+        "comparison_rank": 3
+      },
+      {
+        "cipher_name": "AES-256-CBC",
+        "encrypt_mbps": 461.8212382351039,
+        "decrypt_mbps": 766.9299792928907,
+        "hw_accelerated": false,
+        "key_size_bits": 256,
+        "block_size_bytes": 16,
+        "throughput_ratio": 0.6021687125347519,
+        "comparison_rank": 4
+      }
+    ],
+    "fastest_cipher": "AES-256-GCM",
+    "slowest_cipher": "AES-256-CBC",
+    "overall_throughput_ratio": 1.555582695153666
+  },
+  "tls_simulation": {
+    "handshake_time_ms": 0.8480000000000001,
+    "cipher_suite": "TLS_AES_128_GCM_SHA256",
+    "key_exchange_time_ms": 0.549,
+    "certificate_verify_time_ms": 0.287,
+    "hmac_derivation_time_ms": 0.012,
+    "bulk_transfer_encrypt_mbps": 922.8221626652734,
+    "bulk_transfer_decrypt_mbps": 994.3215968504531,
+    "num_bulk_transfers": 10,
+    "total_session_ms": 39.586
+  }
+}

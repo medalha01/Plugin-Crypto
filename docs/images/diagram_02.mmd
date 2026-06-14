@@ -1,0 +1,86 @@
+graph LR
+    API["plugin_crypto.dart"]
+    CRYPTO_API["crypto_api.dart"]
+    OPS["crypto_operations.dart"]
+    PLUGIN_OPS["plugin_crypto_operations.dart"]
+    CONTEXT["crypto_context.dart\n(CryptographicOperations interface)"]
+    AES["aes_operations.dart"]
+    ASYM["asymmetric_operations.dart"]
+    CMS["cms_operations.dart"]
+    X509["x509_operations.dart"]
+    BINDINGS["openssl_bindings.dart"]
+    LOADER["native_loader.dart"]
+    MODELS["models/"]
+    METRICS["metrics/"]
+    ERRORS["openssl_error.dart"]
+
+    subgraph "flows/"
+        KEY_CREATOR["key_creator.dart"]
+        KEY_FACTORY["key_creator_factory.dart"]
+        RSA["rsa_key_creator.dart"]
+        EC["ec_key_creator.dart"]
+        MLKEM["ml_kem_key_creator.dart"]
+        MLDSA["ml_dsa_key_creator.dart"]
+        CERT_CREATOR["certificate_creator.dart"]
+        CERT_BUILDER["certificate_builder.dart"]
+        SELF_SIGNED["self_signed_cert_creator.dart"]
+        CHAIN_VERIFIER["chain_verifier.dart"]
+        OPENSSL_CHAIN["openssl_chain_verifier.dart"]
+        STORE_FACTORY["x509_store_factory.dart"]
+        FILE_SIGNER["file_signer.dart"]
+        STREAMING_SIGNER["streaming_file_signer.dart"]
+        REV_VERIFIER["revocation_verifier.dart"]
+        CRL["crl_verifier.dart"]
+        OCSP["ocsp_verifier.dart"]
+    end
+
+    API --> CRYPTO_API
+    CRYPTO_API --> OPS
+    OPS --> PLUGIN_OPS
+    PLUGIN_OPS --> CONTEXT
+    PLUGIN_OPS --> AES
+    PLUGIN_OPS --> ASYM
+    PLUGIN_OPS --> CMS
+    PLUGIN_OPS --> X509
+    AES --> BINDINGS
+    ASYM --> BINDINGS
+    CMS --> BINDINGS
+    X509 --> BINDINGS
+    BINDINGS --> LOADER
+
+    KEY_FACTORY --> KEY_CREATOR
+    RSA --> KEY_CREATOR
+    EC --> KEY_CREATOR
+    MLKEM --> KEY_CREATOR
+    MLDSA --> KEY_CREATOR
+    KEY_FACTORY --> RSA
+    KEY_FACTORY --> EC
+    KEY_FACTORY --> MLKEM
+    KEY_FACTORY --> MLDSA
+    PLUGIN_OPS --> KEY_FACTORY
+
+    CERT_BUILDER --> CERT_CREATOR
+    SELF_SIGNED --> CERT_CREATOR
+    PLUGIN_OPS --> CERT_BUILDER
+
+    OPENSSL_CHAIN --> CHAIN_VERIFIER
+    STORE_FACTORY --> CHAIN_VERIFIER
+    PLUGIN_OPS --> OPENSSL_CHAIN
+
+    STREAMING_SIGNER --> FILE_SIGNER
+    PLUGIN_OPS --> STREAMING_SIGNER
+
+    CRL --> REV_VERIFIER
+    OCSP --> REV_VERIFIER
+    PLUGIN_OPS --> CRL
+    PLUGIN_OPS --> OCSP
+
+    AES --> MODELS
+    ASYM --> MODELS
+    CMS --> MODELS
+    X509 --> MODELS
+    AES --> ERRORS
+    ASYM --> ERRORS
+    CMS --> ERRORS
+    X509 --> ERRORS
+    PLUGIN_OPS --> METRICS
