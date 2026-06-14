@@ -5,37 +5,62 @@ graph TD
 
     subgraph "Plugin Crypto"
         API["PluginCryptoAPI\n(singleton)"]
-        FACADE["CryptoOperations\n(facade)"]
-        OPS["PluginCryptoOperations\n(implements CryptographicOperations)"]
-        AES["AesOperations"]
-        ASYM["AsymmetricOperations"]
-        CMS["CmsOperations"]
-        X509["X509Operations"]
+        CTX["PluginCryptoContext\n(DI container)"]
+        CRYPTO["CryptoOperations\n(hash + random)"]
+        AES["AesOperations\n(AES-CBC / GCM)"]
+        ASYM["AsymmetricOperations\n(RSA / EC / ML-KEM / ML-DSA)"]
+        CMS["CmsOperations\n(CMS / CAdES)"]
+        X509["X509Operations\n(certificados X.509)"]
+    end
+
+    subgraph "Flows"
+        KCF["KeyCreatorFactory\n(RSA / EC / ML-KEM / ML-DSA)"]
+        CB["CertificateBuilder\n(X.509 v3 fluente)"]
+        SFS["StreamingFileSigner\n(BIO streaming)"]
+        CV["ChainVerifier\n(folha → raiz)"]
+        RV["CrlVerifier /\nOcspVerifier"]
+        CG["CsrGenerator"]
+        TC["TimestampClient\n(RFC 3161)"]
     end
 
     subgraph "FFI Layer"
-        BINDINGS["openssl_bindings.dart\n(263 FFI bindings)"]
-        LOADER["native_loader.dart\n(loadCrypto)"]
+        BINDINGS["openssl_bindings.dart\n(189 FFI bindings)"]
+        LOADER["native_loader.dart\n(loadCrypto / loadSsl)"]
     end
 
     subgraph "Native Libraries"
         LIBCRYPTO["libcrypto.so"]
         LIBSSL["libssl.so"]
         FIPS["FIPS Provider\n(fips.so)"]
+        LEGACY["Legacy Provider\n(legacy.so)"]
+        OQS["OQS Provider\n(oqsprovider.so)"]
     end
 
     FLUTTER --> API
-    API --> FACADE
-    FACADE --> OPS
-    OPS --> AES
-    OPS --> ASYM
-    OPS --> CMS
-    OPS --> X509
+    API --> CTX
+    CTX --> CRYPTO
+    CTX --> AES
+    CTX --> ASYM
+    CTX --> CMS
+    CTX --> X509
+
     AES --> BINDINGS
     ASYM --> BINDINGS
     CMS --> BINDINGS
     X509 --> BINDINGS
+    CRYPTO --> BINDINGS
+
+    ASYM -.-> KCF
+    CMS -.-> CB
+    CMS -.-> SFS
+    X509 -.-> CV
+    X509 -.-> RV
+    X509 -.-> CG
+    CMS -.-> TC
+
     BINDINGS --> LOADER
     LOADER --> LIBCRYPTO
     LOADER --> LIBSSL
     LIBCRYPTO -.-> FIPS
+    LIBCRYPTO -.-> LEGACY
+    LIBCRYPTO -.-> OQS
