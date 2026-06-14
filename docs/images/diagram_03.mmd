@@ -1,15 +1,15 @@
 sequenceDiagram
     participant App as Flutter App
     participant API as PluginCryptoAPI
-    participant Ops as CryptoOperations
+    participant Asym as AsymmetricOperations
     participant Factory as KeyCreatorFactory
     participant Creator as KeyCreator
     participant FFI as openssl_bindings
     participant Native as OpenSSL (libcrypto)
 
-    App->>API: createKeyPair(algorithm, params)
-    API->>Ops: createKeyPair(algorithm, params)
-    Ops->>Factory: create(KeySpec)
+    App->>API: generateKeyPair(KeySpec)
+    API->>Asym: generateKeyPair(KeySpec)
+    Asym->>Factory: create(KeySpec)
     Factory->>Factory: evaluate algorithm type
     alt RSA
         Factory->>Creator: RsaKeyCreator(params)
@@ -20,11 +20,12 @@ sequenceDiagram
     else ML-DSA
         Factory->>Creator: MlDsaKeyCreator(params)
     end
-    Factory-->>Ops: KeyCreator instance
+    Factory-->>Asym: KeyCreator instance
 
-    Ops->>Creator: generate()
-    Creator->>Creator: allocate EVP_PKEY_CTX
-    Creator->>FFI: EVP_PKEY_keygen_init(ctx)
+    Asym->>Creator: generate()
+    Creator->>FFI: EVP_PKEY_CTX_new_id(id)
+    FFI->>Native: EVP_PKEY_CTX_new_id
+    Native-->>FFI: EVP_PKEY_CTX pointer
     FFI->>Native: EVP_PKEY_keygen_init
     Native-->>FFI: OK
     FFI-->>Creator: OK
@@ -36,6 +37,6 @@ sequenceDiagram
     FFI-->>Creator: EVP_PKEY pointer
 
     Creator->>Creator: extract public/private bytes
-    Creator-->>Ops: CryptoSuccess(KeyPair)
-    Ops-->>API: CryptoSuccess(KeyPair)
+    Creator-->>Asym: CryptoSuccess(KeyPair)
+    Asym-->>API: CryptoSuccess(KeyPair)
     API-->>App: CryptoSuccess(KeyPair)

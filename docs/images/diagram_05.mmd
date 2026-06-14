@@ -1,14 +1,12 @@
 sequenceDiagram
     participant App as Flutter App
     participant API as PluginCryptoAPI
-    participant Ops as CryptoOperations
     participant AES as AesOperations
     participant FFI as openssl_bindings
     participant Native as OpenSSL (libcrypto)
 
-    App->>API: encryptAesGcm(plaintext, key, iv, aad)
-    API->>Ops: encryptAesGcm(plaintext, key, iv, aad)
-    Ops->>AES: encryptGcm(plaintext, key, iv, aad)
+    App->>API: aes256GcmEncrypt(plaintext, key, iv, aad)
+    API->>AES: aes256GcmEncrypt(plaintext, key, iv, aad)
 
     Note over AES: Create EVP_CIPHER_CTX
     AES->>FFI: EVP_CIPHER_CTX_new()
@@ -40,6 +38,5 @@ sequenceDiagram
     Native-->>FFI: tag (16 bytes)
 
     AES->>FFI: EVP_CIPHER_CTX_free(ctx)
-    AES-->>Ops: (ciphertext, tag)
-    Ops-->>API: CryptoSuccess(ciphertext, tag)
-    API-->>App: CryptoSuccess(ciphertext, tag)
+    AES-->>API: AesGcmResult(ciphertext, tag)
+    API-->>App: AesGcmResult(ciphertext, tag)

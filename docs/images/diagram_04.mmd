@@ -1,15 +1,15 @@
 sequenceDiagram
     participant App as Flutter App
     participant API as PluginCryptoAPI
-    participant Ops as CryptoOperations
+    participant X509 as X509Operations
     participant Verifier as OpensslChainVerifier
     participant StoreFactory as X509StoreFactory
     participant FFI as openssl_bindings
     participant Native as OpenSSL (libcrypto)
 
-    App->>API: verifyChain(leaf, intermediates, root)
-    API->>Ops: verifyChain(leaf, intermediates, root)
-    Ops->>Verifier: verify(endEntity, chain, trustAnchor)
+    App->>API: verifyChain(request)
+    API->>X509: verifyChain(request)
+    X509->>Verifier: verify(ChainVerificationRequest)
 
     Verifier->>StoreFactory: createStore(trustAnchor, intermediates)
     StoreFactory->>FFI: X509_STORE_new()
@@ -42,11 +42,11 @@ sequenceDiagram
 
     Verifier->>Verifier: evaluate result
     alt success
-        Verifier-->>Ops: CryptoSuccess(valid)
+        Verifier-->>X509: CryptoSuccess(valid)
     else failure
         Verifier->>FFI: X509_STORE_CTX_get_error(ctx)
         FFI-->>Verifier: error code
-        Verifier-->>Ops: CryptoFailure(error)
+        Verifier-->>X509: CryptoFailure(error)
     end
-    Ops-->>API: result
+    X509-->>API: result
     API-->>App: result

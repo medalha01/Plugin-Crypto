@@ -1,21 +1,23 @@
 graph LR
-    API["plugin_crypto.dart"]
-    CRYPTO_API["crypto_api.dart"]
-    OPS["crypto_operations.dart"]
-    PLUGIN_OPS["plugin_crypto_operations.dart"]
-    CONTEXT["crypto_context.dart\n(CryptographicOperations interface)"]
-    AES["aes_operations.dart"]
-    ASYM["asymmetric_operations.dart"]
-    CMS["cms_operations.dart"]
-    X509["x509_operations.dart"]
-    BINDINGS["openssl_bindings.dart"]
-    LOADER["native_loader.dart"]
-    MODELS["models/"]
-    METRICS["metrics/"]
-    ERRORS["openssl_error.dart"]
+    PLUGIN["plugin_crypto.dart\n(PluginCrypto class)"]
+    API["crypto_api.dart\n(PluginCryptoAPI — singleton)"]
+    CTX["plugin_crypto_context.dart\n(PluginCryptoContext — DI)"]
+    CRYPTO["crypto_operations.dart\n(CryptoOperations)"]
+    AES["aes_operations.dart\n(AesOperations)"]
+    ASYM["asymmetric_operations.dart\n(AsymmetricOperations)"]
+    CMS["cms_operations.dart\n(CmsOperations)"]
+    X509["x509_operations.dart\n(X509Operations)"]
+    CRL["crl_operations.dart"]
+    CSR["csr_operations.dart"]
+    OCSP["ocsp_operations.dart"]
+    TS["timestamp_operations.dart"]
+    BINDINGS["openssl_bindings.dart\n(189 FFI bindings)"]
+    LOADER["native_loader.dart\n(loadCrypto / loadSsl)"]
+    MODELS["models/\n(KeySpec, CryptoResult,\nCryptoError, etc.)"]
+    ERRORS["utils/openssl_error.dart"]
 
     subgraph "flows/"
-        KEY_CREATOR["key_creator.dart"]
+        KEY_CREATOR["key_creator.dart\n(abstract)"]
         KEY_FACTORY["key_creator_factory.dart"]
         RSA["rsa_key_creator.dart"]
         EC["ec_key_creator.dart"]
@@ -30,50 +32,34 @@ graph LR
         FILE_SIGNER["file_signer.dart"]
         STREAMING_SIGNER["streaming_file_signer.dart"]
         REV_VERIFIER["revocation_verifier.dart"]
-        CRL["crl_verifier.dart"]
-        OCSP["ocsp_verifier.dart"]
+        CRL_FLOW["crl_verifier.dart"]
+        OCSP_FLOW["ocsp_verifier.dart"]
+        CSR_FLOW["csr_generator.dart\n/ openssl_csr_generator.dart"]
+        TS_FLOW["timestamp_client.dart\n/ openssl_timestamp_client.dart"]
     end
 
-    API --> CRYPTO_API
-    CRYPTO_API --> OPS
-    OPS --> PLUGIN_OPS
-    PLUGIN_OPS --> CONTEXT
-    PLUGIN_OPS --> AES
-    PLUGIN_OPS --> ASYM
-    PLUGIN_OPS --> CMS
-    PLUGIN_OPS --> X509
+    PLUGIN --> API
+    API --> CTX
+    CTX --> CRYPTO
+    CTX --> AES
+    CTX --> ASYM
+    CTX --> CMS
+    CTX --> X509
+    CTX --> CRL
+    CTX --> CSR
+    CTX --> OCSP
+    CTX --> TS
+
+    CRYPTO --> BINDINGS
     AES --> BINDINGS
     ASYM --> BINDINGS
     CMS --> BINDINGS
     X509 --> BINDINGS
+    CRL --> BINDINGS
+    CSR --> BINDINGS
+    OCSP --> BINDINGS
+    TS --> BINDINGS
     BINDINGS --> LOADER
-
-    KEY_FACTORY --> KEY_CREATOR
-    RSA --> KEY_CREATOR
-    EC --> KEY_CREATOR
-    MLKEM --> KEY_CREATOR
-    MLDSA --> KEY_CREATOR
-    KEY_FACTORY --> RSA
-    KEY_FACTORY --> EC
-    KEY_FACTORY --> MLKEM
-    KEY_FACTORY --> MLDSA
-    PLUGIN_OPS --> KEY_FACTORY
-
-    CERT_BUILDER --> CERT_CREATOR
-    SELF_SIGNED --> CERT_CREATOR
-    PLUGIN_OPS --> CERT_BUILDER
-
-    OPENSSL_CHAIN --> CHAIN_VERIFIER
-    STORE_FACTORY --> CHAIN_VERIFIER
-    PLUGIN_OPS --> OPENSSL_CHAIN
-
-    STREAMING_SIGNER --> FILE_SIGNER
-    PLUGIN_OPS --> STREAMING_SIGNER
-
-    CRL --> REV_VERIFIER
-    OCSP --> REV_VERIFIER
-    PLUGIN_OPS --> CRL
-    PLUGIN_OPS --> OCSP
 
     AES --> MODELS
     ASYM --> MODELS
@@ -83,4 +69,32 @@ graph LR
     ASYM --> ERRORS
     CMS --> ERRORS
     X509 --> ERRORS
-    PLUGIN_OPS --> METRICS
+
+    RSA --> KEY_CREATOR
+    EC --> KEY_CREATOR
+    MLKEM --> KEY_CREATOR
+    MLDSA --> KEY_CREATOR
+    KEY_FACTORY --> RSA
+    KEY_FACTORY --> EC
+    KEY_FACTORY --> MLKEM
+    KEY_FACTORY --> MLDSA
+    ASYM --> KEY_FACTORY
+
+    CERT_BUILDER --> CERT_CREATOR
+    SELF_SIGNED --> CERT_CREATOR
+    X509 --> CERT_BUILDER
+
+    OPENSSL_CHAIN --> CHAIN_VERIFIER
+    STORE_FACTORY --> CHAIN_VERIFIER
+    X509 --> OPENSSL_CHAIN
+
+    STREAMING_SIGNER --> FILE_SIGNER
+    CMS --> STREAMING_SIGNER
+
+    CRL_FLOW --> REV_VERIFIER
+    OCSP_FLOW --> REV_VERIFIER
+    X509 --> CRL_FLOW
+    X509 --> OCSP_FLOW
+
+    X509 --> CSR_FLOW
+    CMS --> TS_FLOW

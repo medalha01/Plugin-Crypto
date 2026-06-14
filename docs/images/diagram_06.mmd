@@ -1,34 +1,33 @@
 graph TD
-    LOADER["native_loader.dart\nloadCrypto()"]
-    DETECT["Detect Platform"]
+    LOADER["native_loader.dart"]
+    DETECT["Platform.isAndroid / isLinux / isIOS"]
     LOADER --> DETECT
 
-    DETECT --> LINUX{"Linux?"}
-    LINUX -->|yes| FIPS_CHECK{"FIPS mode?"}
-    FIPS_CHECK -->|yes| LINUX_FIPS["linux/x86_64_fips/\nlibcrypto.so.4 + libssl.so.4"]
-    FIPS_CHECK -->|no| LINUX_STD["linux/x86_64/\nlibcrypto.so.4 + libssl.so.4"]
+    DETECT --> LINUX{"Platform.isLinux?"}
+    DETECT --> ANDROID{"Platform.isAndroid?"}
+    DETECT --> IOS{"Platform.isIOS?"}
 
-    LINUX -->|no| ANDROID{"Android?"}
-    ANDROID -->|yes| ANDROID_LIB["android/src/main/jniLibs/arm64-v8a/\nlibcrypto.so + libssl.so"]
+    LINUX -->|yes| RESOLVE["_resolveNativeDir()\nPLUGIN_CRYPTO_NATIVE_DIR\nou native/linux/x86_64/"]
+    RESOLVE --> FALLBACK1{"libcrypto.so.4?"}
+    FALLBACK1 -->|yes| LINUX_LOAD["DynamicLibrary.open()"]
+    FALLBACK1 -->|no| FALLBACK2{"libcrypto.so?"}
+    FALLBACK2 --> LINUX_LOAD
+    FALLBACK2 -->|no| FALLBACK3["libcrypto.so.3"]
 
-    ANDROID -->|no| IOS_CHECK{"iOS?"}
-    IOS_CHECK -->|yes| IOS_LIB["ios/Assets/openssl/\nlibcrypto.a + libssl.a"]
+    ANDROID -->|yes| ANDROID_LOAD["DynamicLibrary.open('libcrypto.so')"]
+    IOS -->|yes| IOS_LOAD["DynamicLibrary.process()"]
+    IOS -->|no| UNSUPPORTED["throw UnsupportedError"]
 
-    IOS_CHECK -->|no| UNSUPPORTED["throw\nUnsupportedError"]
+    LINUX_LOAD --> BINDINGS["openssl_bindings.dart\n(189 FFI bindings)"]
+    ANDROID_LOAD --> BINDINGS
+    IOS_LOAD --> BINDINGS
 
-    LINUX_FIPS --> DLOPEN["DynamicLibrary.open()"]
-    LINUX_STD --> DLOPEN
-    ANDROID_LIB --> DLOPEN
-    IOS_LIB --> DLOPEN
-
-    DLOPEN --> BINDINGS["openssl_bindings.dart\n(263 FFI function bindings)"]
-
-    subgraph "FIPS Provider Chain"
-        FIPS_CONF["providers/fipsmodule.cnf"]
-        FIPS_SO["providers/fips.so"]
-        OPENSSL_BIN["openssl binary\n(FIPS-aware)"]
+    subgraph "Native Libraries (bundled)"
+        LINUX_SO["native/linux/x86_64/\nlibcrypto.so.4 (6.9 MB)\nlibssl.so.4 (943 KB)"]
+        ANDROID_SO["android/src/main/jniLibs/\narm64-v8a | armeabi-v7a | x86_64\nlibcrypto.so | libssl.so"]
+        PROVIDERS["providers/\nfips.so\nlegacy.so\noqsprovider.so"]
     end
 
-    LINUX_FIPS -.-> FIPS_CONF
-    LINUX_FIPS -.-> FIPS_SO
-    LINUX_FIPS -.-> OPENSSL_BIN
+    LINUX_LOAD -.-> LINUX_SO
+    ANDROID_LOAD -.-> ANDROID_SO
+    LINUX_SO -.-> PROVIDERS
