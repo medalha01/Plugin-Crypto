@@ -1,0 +1,14 @@
+# Build artifacts
+build/
+
+# Test output JSONs (not needed at runtime)
+tcc_metrics_report.json
+tcc_pq_metrics.json
+tcc_openssl_cli_metrics.json
+
+# Example app
+example/
+
+# Development files
+.dart_tool/
+.packages
