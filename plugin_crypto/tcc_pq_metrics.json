@@ -1,0 +1,334 @@
+{
+  "schema_version": "pq_1.0.0",
+  "generated_at": "2026-06-15T02:59:04.725771Z",
+  "platform": "linux_x86_64",
+  "timing": {
+    "operations": [
+      {
+        "operation": "generateMlKemKeyPair_mlKem512",
+        "category": "keygen_pq",
+        "input_size_bytes": 0,
+        "cold_ms": 15.007,
+        "warm_ms": 0.0692,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 5
+      },
+      {
+        "operation": "generateMlKemKeyPair_mlKem768",
+        "category": "keygen_pq",
+        "input_size_bytes": 0,
+        "cold_ms": 0.171,
+        "warm_ms": 0.0728,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 5
+      },
+      {
+        "operation": "generateMlKemKeyPair_mlKem1024",
+        "category": "keygen_pq",
+        "input_size_bytes": 0,
+        "cold_ms": 0.227,
+        "warm_ms": 0.06960000000000001,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 5
+      },
+      {
+        "operation": "generateMlDsaKeyPair_mlDsa44",
+        "category": "keygen_pq",
+        "input_size_bytes": 0,
+        "cold_ms": 5.493,
+        "warm_ms": 0.12079999999999999,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 5
+      },
+      {
+        "operation": "generateMlDsaKeyPair_mlDsa65",
+        "category": "keygen_pq",
+        "input_size_bytes": 0,
+        "cold_ms": 0.436,
+        "warm_ms": 0.1822,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 5
+      },
+      {
+        "operation": "generateMlDsaKeyPair_mlDsa87",
+        "category": "keygen_pq",
+        "input_size_bytes": 0,
+        "cold_ms": 0.293,
+        "warm_ms": 0.202,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 5
+      },
+      {
+        "operation": "mlKemEncapsulate_mlKem512",
+        "category": "kem",
+        "input_size_bytes": 0,
+        "cold_ms": 14.064,
+        "warm_ms": 0.07478,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlKemDecapsulate_mlKem512",
+        "category": "kem",
+        "input_size_bytes": 768,
+        "cold_ms": 2.703,
+        "warm_ms": 0.053079999999999995,
+        "throughput_mbps": 13.798452807083649,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlKemEncapsulate_mlKem768",
+        "category": "kem",
+        "input_size_bytes": 0,
+        "cold_ms": 0.145,
+        "warm_ms": 0.043280000000000006,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlKemDecapsulate_mlKem768",
+        "category": "kem",
+        "input_size_bytes": 1088,
+        "cold_ms": 0.121,
+        "warm_ms": 0.07,
+        "throughput_mbps": 14.822823660714285,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlKemEncapsulate_mlKem1024",
+        "category": "kem",
+        "input_size_bytes": 0,
+        "cold_ms": 0.111,
+        "warm_ms": 0.05734,
+        "throughput_mbps": 0.0,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlKemDecapsulate_mlKem1024",
+        "category": "kem",
+        "input_size_bytes": 1568,
+        "cold_ms": 0.166,
+        "warm_ms": 0.09594,
+        "throughput_mbps": 15.586422015061498,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlDsaSign_mlDsa44",
+        "category": "sign_pq",
+        "input_size_bytes": 32,
+        "cold_ms": 3.863,
+        "warm_ms": 0.41812,
+        "throughput_mbps": 0.07298760672773366,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlDsaVerify_mlDsa44",
+        "category": "verify_pq",
+        "input_size_bytes": 32,
+        "cold_ms": 1.113,
+        "warm_ms": 0.10346,
+        "throughput_mbps": 0.2949698252947999,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlDsaSign_mlDsa65",
+        "category": "sign_pq",
+        "input_size_bytes": 32,
+        "cold_ms": 0.447,
+        "warm_ms": 0.765,
+        "throughput_mbps": 0.0398922589869281,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlDsaVerify_mlDsa65",
+        "category": "verify_pq",
+        "input_size_bytes": 32,
+        "cold_ms": 0.221,
+        "warm_ms": 0.13466,
+        "throughput_mbps": 0.22662689829942073,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlDsaSign_mlDsa87",
+        "category": "sign_pq",
+        "input_size_bytes": 32,
+        "cold_ms": 0.749,
+        "warm_ms": 0.8803,
+        "throughput_mbps": 0.03466724767124844,
+        "iterations_warm": 50
+      },
+      {
+        "operation": "mlDsaVerify_mlDsa87",
+        "category": "verify_pq",
+        "input_size_bytes": 32,
+        "cold_ms": 0.284,
+        "warm_ms": 0.19908,
+        "throughput_mbps": 0.15329303860257182,
+        "iterations_warm": 50
+      }
+    ],
+    "total_benchmark_time_ms": 806.905,
+    "histograms": [
+      {
+        "operation": "mlKemEncapsulate",
+        "category": "kem",
+        "input_size_bytes": 0,
+        "sample_count": 25,
+        "min_ms": 0.036,
+        "p5_ms": 0.036,
+        "p25_ms": 0.038,
+        "median_ms": 0.039,
+        "p75_ms": 0.04,
+        "p95_ms": 0.06079999999999999,
+        "p99_ms": 0.0936799999999999,
+        "max_ms": 0.104,
+        "mean_ms": 0.04340000000000001,
+        "stddev_ms": 0.013982846634358828
+      },
+      {
+        "operation": "mlDsaSign",
+        "category": "sign_pq",
+        "input_size_bytes": 32,
+        "sample_count": 25,
+        "min_ms": 0.223,
+        "p5_ms": 0.2256,
+        "p25_ms": 0.286,
+        "median_ms": 0.353,
+        "p75_ms": 0.495,
+        "p95_ms": 0.7981999999999998,
+        "p99_ms": 1.3343599999999987,
+        "max_ms": 1.499,
+        "mean_ms": 0.44016000000000005,
+        "stddev_ms": 0.2668590159616122
+      }
+    ],
+    "raw_samples": [],
+    "category_summaries": [
+      {
+        "category": "keygen_pq",
+        "operation_count": 6,
+        "total_measurements": 30,
+        "total_warm_time_ms": 0.7166000000000001,
+        "total_cold_time_ms": 21.627,
+        "mean_throughput_mbps": 0.0,
+        "max_throughput_mbps": 0.0,
+        "min_throughput_mbps": 0.0,
+        "weighted_throughput_mbps": 0.0
+      },
+      {
+        "category": "kem",
+        "operation_count": 6,
+        "total_measurements": 300,
+        "total_warm_time_ms": 0.39442,
+        "total_cold_time_ms": 17.31,
+        "mean_throughput_mbps": 7.367949747143238,
+        "max_throughput_mbps": 15.586422015061498,
+        "min_throughput_mbps": 0.0,
+        "weighted_throughput_mbps": 14.942743463292585
+      },
+      {
+        "category": "sign_pq",
+        "operation_count": 3,
+        "total_measurements": 150,
+        "total_warm_time_ms": 2.06342,
+        "total_cold_time_ms": 5.058999999999999,
+        "mean_throughput_mbps": 0.049182371128636736,
+        "max_throughput_mbps": 0.07298760672773366,
+        "min_throughput_mbps": 0.03466724767124844,
+        "weighted_throughput_mbps": 0.049182371128636736
+      },
+      {
+        "category": "verify_pq",
+        "operation_count": 3,
+        "total_measurements": 150,
+        "total_warm_time_ms": 0.43720000000000003,
+        "total_cold_time_ms": 1.618,
+        "mean_throughput_mbps": 0.2249632540655975,
+        "max_throughput_mbps": 0.2949698252947999,
+        "min_throughput_mbps": 0.15329303860257182,
+        "weighted_throughput_mbps": 0.2249632540655975
+      }
+    ]
+  },
+  "security_checks": {
+    "mlkem_key_uniqueness": {
+      "passed": true,
+      "evidence": {
+        "uniqueness_rate": 1.0,
+        "iterations": 100,
+        "variant": "mlKem768"
+      }
+    },
+    "mldsa_key_uniqueness": {
+      "passed": true,
+      "evidence": {
+        "uniqueness_rate": 1.0,
+        "iterations": 100,
+        "variant": "mlDsa44"
+      }
+    },
+    "mldsa_signature_nondeterminism": {
+      "passed": true,
+      "evidence": {
+        "both_verify": true,
+        "signatures_differ": true,
+        "sig_len": 2420,
+        "standard": "FIPS 204"
+      }
+    },
+    "mlkem_shared_secret_independence": {
+      "passed": true,
+      "evidence": {
+        "uniqueness_rate": 1.0,
+        "iterations": 50,
+        "variant": "mlKem768"
+      }
+    },
+    "mlkem_ciphertext_independence": {
+      "passed": true,
+      "evidence": {
+        "uniqueness_rate": 1.0,
+        "iterations": 50,
+        "variant": "mlKem768"
+      }
+    },
+    "mlkem_cross_key_rejection": {
+      "passed": true,
+      "evidence": {
+        "secret_a_len": 32,
+        "secret_b_len": 32,
+        "variant": "mlKem768"
+      }
+    },
+    "mldsa_cross_key_rejection": {
+      "passed": true,
+      "evidence": {
+        "verified_with_wrong_key": false,
+        "variant": "mlDsa44"
+      }
+    },
+    "pq_cross_algorithm_rejection": {
+      "passed": true,
+      "evidence": {
+        "kem_variant": "mlKem768",
+        "dsa_variant": "mlDsa44"
+      }
+    }
+  },
+  "memory_samples": {
+    "after_mlkem_keygen": 133423104,
+    "after_mldsa_keygen": 133423104,
+    "after_mlkem_ops": 133554176,
+    "after_mldsa_ops": 133554176,
+    "after_pq_security": 133554176,
+    "pq_baseline": 134713344,
+    "pq_api_init": 136810496,
+    "after_pq_stress": 145846272,
+    "pq_final": 145846272
+  },
+  "test_results": {
+    "total": 58,
+    "passed": 29,
+    "failed": 0
+  }
+}
