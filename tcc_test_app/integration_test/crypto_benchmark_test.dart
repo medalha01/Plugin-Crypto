@@ -159,7 +159,7 @@ void main() {
 
   tearDownAll(() {
     final encoded = const JsonEncoder.withIndent('  ').convert(results);
-    final path = '${Directory.systemTemp.path}/tcc_android_benchmark.json';
+    final path = '/sdcard/Download/tcc_android_benchmark.json';
     File(path).writeAsStringSync(encoded);
     print('TCC_BENCHMARK_OUTPUT:$path');
   });

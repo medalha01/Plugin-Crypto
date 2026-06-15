@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-06-15T04:13:38.523102Z",
+  "platform": "android_arm64_v8a",
+  "operations": [
+    {
+      "operation": "sha256",
+      "input_size_bytes": 1024,
+      "warm_ms": 0.036160000000000005
+    },
+    {
+      "operation": "aes256GcmEncrypt",
+      "input_size_bytes": 1024,
+      "warm_ms": 0.01604000000000001
+    },
+    {
+      "operation": "generateRsaKeyPair_2048",
+      "input_size_bytes": 0,
+      "warm_ms": 223.37403999999995
+    },
+    {
+      "operation": "rsaSign_sha256",
+      "input_size_bytes": 32,
+      "warm_ms": 3.955320000000001
+    },
+    {
+      "operation": "rsaVerify_sha256",
+      "input_size_bytes": 32,
+      "warm_ms": 0.13292
+    },
+    {
+      "operation": "ecSign_prime256v1",
+      "input_size_bytes": 32,
+      "warm_ms": 1.0092
+    },
+    {
+      "operation": "generateMlKemKeyPair_mlKem768",
+      "input_size_bytes": 0,
+      "warm_ms": 0.15436
+    },
+    {
+      "operation": "mlDsaSign_mlDsa44",
+      "input_size_bytes": 32,
+      "warm_ms": 0.9572400000000002
+    }
+  ]
+}
