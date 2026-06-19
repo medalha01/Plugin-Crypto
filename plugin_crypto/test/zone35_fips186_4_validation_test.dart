@@ -17,7 +17,6 @@ import 'package:plugin_crypto/src/crypto/constants.dart';
 import 'package:plugin_crypto/src/ffi/native_loader.dart';
 import 'package:plugin_crypto/src/ffi/openssl_bindings.dart';
 
-
 /// Represents an uncompressed EC point (x, y) on a prime field curve.
 class _EcPoint {
   final BigInt x;
@@ -25,10 +24,11 @@ class _EcPoint {
   const _EcPoint(this.x, this.y);
 }
 
-
 PluginCryptoAPI get _api => PluginCryptoAPI.instance;
-final OpenSslBindings _bindings =
-    OpenSslBindings.create(loadCrypto(), loadSsl());
+final OpenSslBindings _bindings = OpenSslBindings.create(
+  loadCrypto(),
+  loadSsl(),
+);
 
 BigInt _privateKeyParameter(String privateKeyPem, String parameter) {
   final bio = bioFromData(
@@ -248,7 +248,6 @@ _EcPoint? _extractEcPoint(Uint8List spkiDer) {
   }
 }
 
-
 final BigInt _p256Prime = BigInt.parse(
   'ffffffff00000001000000000000000000000000ffffffffffffffffffffffff',
   radix: 16,
@@ -263,7 +262,6 @@ final BigInt _p256B = BigInt.parse(
   '5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b',
   radix: 16,
 );
-
 
 void main() {
   group('V1: RSA key size validation', () {
@@ -416,11 +414,14 @@ void main() {
       expect(_satisfiesRsaFactorDistance(p, q, 2048), isTrue);
     });
 
-    test('RSA factor-distance assertion rejects deliberately close factors', () {
-      final p = BigInt.two.pow(1023) + BigInt.from(12345);
-      final q = p + BigInt.one;
-      expect(_satisfiesRsaFactorDistance(p, q, 2048), isFalse);
-    });
+    test(
+      'RSA factor-distance assertion rejects deliberately close factors',
+      () {
+        final p = BigInt.two.pow(1023) + BigInt.from(12345);
+        final q = p + BigInt.one;
+        expect(_satisfiesRsaFactorDistance(p, q, 2048), isFalse);
+      },
+    );
   });
 
   group('V4: EC point on curve (P-256)', () {
@@ -581,122 +582,144 @@ void main() {
   });
 
   group('V7: ML-KEM-768 public key size (FIPS 203)', () {
-    test(
-      'ML-KEM-768 public key DER == 1206 bytes',
-      () {
-        final ctx = _bindings.evpPkeyCtxNewId(nidMlKem768, nullptr);
-        if (ctx == nullptr) {
-          markTestSkipped(
-              'ML-KEM-768 EVP_PKEY_CTX creation failed');
-          return;
-        }
+    test('ML-KEM-768 public key DER == 1206 bytes', () {
+      final ctx = _bindings.evpPkeyCtxNewId(nidMlKem768, nullptr);
+      expect(
+        ctx,
+        isNot(nullptr),
+        reason:
+            'ML-KEM-768 is required but EVP_PKEY_CTX creation failed: '
+            '${getOpenSslError(_bindings)}',
+      );
 
+      try {
+        expect(
+          _bindings.evpPkeyKeygenInit(ctx),
+          1,
+          reason:
+              'ML-KEM-768 is required but keygen init failed: '
+              '${getOpenSslError(_bindings)}',
+        );
+
+        final ppkey = calloc<EVP_PKEY>();
         try {
-          if (_bindings.evpPkeyKeygenInit(ctx) != 1) {
-            markTestSkipped('ML-KEM-768 keygen init failed');
-            return;
-          }
+          expect(
+            _bindings.evpPkeyKeygen(ctx, ppkey),
+            1,
+            reason:
+                'ML-KEM-768 is required but keygen failed: '
+                '${getOpenSslError(_bindings)}',
+          );
+          expect(ppkey.value, isNot(nullptr));
 
-          final ppkey = calloc<EVP_PKEY>();
+          final pubBio = _bindings.bioNew(_bindings.bioSMem());
+          expect(
+            pubBio,
+            isNot(nullptr),
+            reason: 'ML-KEM-768 public-key BIO creation failed',
+          );
+
           try {
-            if (_bindings.evpPkeyKeygen(ctx, ppkey) != 1) {
-              markTestSkipped('ML-KEM-768 keygen failed');
-              return;
-            }
+            expect(
+              _bindings.pemWriteBioPubkey(pubBio, ppkey.value),
+              1,
+              reason:
+                  'ML-KEM-768 PEM write failed: '
+                  '${getOpenSslError(_bindings)}',
+            );
 
-            final pubBio = _bindings.bioNew(_bindings.bioSMem());
-            if (pubBio == nullptr) {
-              markTestSkipped('ML-KEM-768 BIO creation failed');
-              return;
-            }
-
-            try {
-              if (_bindings.pemWriteBioPubkey(pubBio, ppkey.value) != 1) {
-                markTestSkipped(
-                    'ML-KEM-768 PEM write failed: '
-                    '${getOpenSslError(_bindings)}');
-                return;
-              }
-
-              final pem = bioToString(_bindings, pubBio);
-              final der = _pemDecode(pem);
-              expect(
-                der.length,
-                equals(1206),
-                reason:
-                    'ML-KEM-768 pubkey DER must be exactly 1206 bytes '
-                    '(OpenSSL 4.0.0 SPKI wrapper). Got ${der.length} bytes.',
-              );
-            } finally {
-              _bindings.bioFree(pubBio);
-            }
+            final pem = bioToString(_bindings, pubBio);
+            final der = _pemDecode(pem);
+            expect(
+              der.length,
+              equals(1206),
+              reason:
+                  'ML-KEM-768 pubkey DER must be exactly 1206 bytes '
+                  '(OpenSSL 4.0.0 SPKI wrapper). Got ${der.length} bytes.',
+            );
           } finally {
-            calloc.free(ppkey);
+            _bindings.bioFree(pubBio);
           }
         } finally {
-          _bindings.evpPkeyCtxFree(ctx);
+          if (ppkey.value != nullptr) {
+            _bindings.evpPkeyFree(ppkey.value);
+          }
+          calloc.free(ppkey);
         }
-      },
-    );
+      } finally {
+        _bindings.evpPkeyCtxFree(ctx);
+      }
+    });
   });
 
   group('V8: ML-DSA-44 public key size (FIPS 204)', () {
-    test(
-      'ML-DSA-44 public key DER == 1334 bytes',
-      () {
-        final ctx = _bindings.evpPkeyCtxNewId(nidMlDsa44, nullptr);
-        if (ctx == nullptr) {
-          markTestSkipped(
-              'ML-DSA-44 EVP_PKEY_CTX creation failed');
-          return;
-        }
+    test('ML-DSA-44 public key DER == 1334 bytes', () {
+      final ctx = _bindings.evpPkeyCtxNewId(nidMlDsa44, nullptr);
+      expect(
+        ctx,
+        isNot(nullptr),
+        reason:
+            'ML-DSA-44 is required but EVP_PKEY_CTX creation failed: '
+            '${getOpenSslError(_bindings)}',
+      );
 
+      try {
+        expect(
+          _bindings.evpPkeyKeygenInit(ctx),
+          1,
+          reason:
+              'ML-DSA-44 is required but keygen init failed: '
+              '${getOpenSslError(_bindings)}',
+        );
+
+        final ppkey = calloc<EVP_PKEY>();
         try {
-          if (_bindings.evpPkeyKeygenInit(ctx) != 1) {
-            markTestSkipped('ML-DSA-44 keygen init failed');
-            return;
-          }
+          expect(
+            _bindings.evpPkeyKeygen(ctx, ppkey),
+            1,
+            reason:
+                'ML-DSA-44 is required but keygen failed: '
+                '${getOpenSslError(_bindings)}',
+          );
+          expect(ppkey.value, isNot(nullptr));
 
-          final ppkey = calloc<EVP_PKEY>();
+          final pubBio = _bindings.bioNew(_bindings.bioSMem());
+          expect(
+            pubBio,
+            isNot(nullptr),
+            reason: 'ML-DSA-44 public-key BIO creation failed',
+          );
+
           try {
-            if (_bindings.evpPkeyKeygen(ctx, ppkey) != 1) {
-              markTestSkipped('ML-DSA-44 keygen failed');
-              return;
-            }
+            expect(
+              _bindings.pemWriteBioPubkey(pubBio, ppkey.value),
+              1,
+              reason:
+                  'ML-DSA-44 PEM write failed: '
+                  '${getOpenSslError(_bindings)}',
+            );
 
-            final pubBio = _bindings.bioNew(_bindings.bioSMem());
-            if (pubBio == nullptr) {
-              markTestSkipped('ML-DSA-44 BIO creation failed');
-              return;
-            }
-
-            try {
-              if (_bindings.pemWriteBioPubkey(pubBio, ppkey.value) != 1) {
-                markTestSkipped(
-                    'ML-DSA-44 PEM write failed: '
-                    '${getOpenSslError(_bindings)}');
-                return;
-              }
-
-              final pem = bioToString(_bindings, pubBio);
-              final der = _pemDecode(pem);
-              expect(
-                der.length,
-                equals(1334),
-                reason:
-                    'ML-DSA-44 pubkey DER must be exactly 1334 bytes '
-                    '(OpenSSL 4.0.0 SPKI wrapper). Got ${der.length} bytes.',
-              );
-            } finally {
-              _bindings.bioFree(pubBio);
-            }
+            final pem = bioToString(_bindings, pubBio);
+            final der = _pemDecode(pem);
+            expect(
+              der.length,
+              equals(1334),
+              reason:
+                  'ML-DSA-44 pubkey DER must be exactly 1334 bytes '
+                  '(OpenSSL 4.0.0 SPKI wrapper). Got ${der.length} bytes.',
+            );
           } finally {
-            calloc.free(ppkey);
+            _bindings.bioFree(pubBio);
           }
         } finally {
-          _bindings.evpPkeyCtxFree(ctx);
+          if (ppkey.value != nullptr) {
+            _bindings.evpPkeyFree(ppkey.value);
+          }
+          calloc.free(ppkey);
         }
-      },
-    );
+      } finally {
+        _bindings.evpPkeyCtxFree(ctx);
+      }
+    });
   });
 }
