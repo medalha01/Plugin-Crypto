@@ -9,6 +9,7 @@ import '../ffi/openssl_bindings.dart';
 import 'crypto_data.dart';
 import 'models/crypto_error.dart';
 import 'utils/openssl_error.dart';
+import 'utils/secret_memory.dart';
 
 /// AES symmetric encryption and decryption operations.
 class AesOperations {
@@ -57,6 +58,7 @@ class AesOperations {
     Uint8List? aad,
   }) {
     _validateAesKeyLength(key, 16);
+    _validateGcmIv(iv);
     return _gcmCipherOp(key, iv, plaintext, _b.evpAes128Gcm(), true, aad: aad);
   }
 
@@ -69,6 +71,7 @@ class AesOperations {
     Uint8List? aad,
   }) {
     _validateAesKeyLength(key, 16);
+    _validateGcmIv(iv);
     return _gcmCipherOp(
       key,
       iv,
@@ -88,6 +91,7 @@ class AesOperations {
     Uint8List? aad,
   }) {
     _validateAesKeyLength(key, 32);
+    _validateGcmIv(iv);
     return _gcmCipherOp(key, iv, plaintext, _b.evpAes256Gcm(), true, aad: aad);
   }
 
@@ -100,6 +104,7 @@ class AesOperations {
     Uint8List? aad,
   }) {
     _validateAesKeyLength(key, 32);
+    _validateGcmIv(iv);
     return _gcmCipherOp(
       key,
       iv,
@@ -124,12 +129,18 @@ class AesOperations {
     }
   }
 
-  /// Validates only the AES [key] length (GCM allows variable-length IVs).
+  /// Validates only the AES [key] length.
   static void _validateAesKeyLength(Uint8List key, int expectedKeyLen) {
     if (key.length != expectedKeyLen) {
       throw ArgumentError(
         'Key must be $expectedKeyLen bytes, got ${key.length}',
       );
+    }
+  }
+
+  static void _validateGcmIv(Uint8List iv) {
+    if (iv.length != 12) {
+      throw ArgumentError('AES-GCM nonce must be 12 bytes, got ${iv.length}');
     }
   }
 
@@ -144,11 +155,8 @@ class AesOperations {
     final ctx = _b.evpCipherCtxNew();
     if (ctx == nullptr) _fail('EVP_CIPHER_CTX_new');
     try {
-      final kp = calloc<Uint8>(key.length);
-      final ivp = calloc<Uint8>(iv.length);
-      kp.asTypedList(key.length).setAll(0, key);
-      ivp.asTypedList(iv.length).setAll(0, iv);
-      try {
+      return withSecretBytes(_b, key, (kp) {
+        return withSecretBytes(_b, iv, (ivp) {
         if (encrypt) {
           _check1(
             _b.evpEncryptInitEx(ctx, cipher, nullptr, kp, ivp),
@@ -166,9 +174,7 @@ class AesOperations {
         final out = calloc<Uint8>(outLen);
         final written = calloc<Int>();
         try {
-          final dp = calloc<Uint8>(data.length);
-          try {
-            dp.asTypedList(data.length).setAll(0, data);
+          return withSecretBytes(_b, data, (dp) {
             if (encrypt) {
               _check1(
                 _b.evpEncryptUpdate(ctx, out, written, dp, data.length),
@@ -208,17 +214,14 @@ class AesOperations {
             } finally {
               calloc.free(finalWritten);
             }
-          } finally {
-            calloc.free(dp);
-          }
+          });
         } finally {
+          if (!encrypt) _b.opensslCleanse(out.cast(), outLen);
           calloc.free(out);
           calloc.free(written);
         }
-      } finally {
-        calloc.free(kp);
-        calloc.free(ivp);
-      }
+        });
+      });
     } finally {
       _b.evpCipherCtxFree(ctx);
     }
@@ -236,20 +239,33 @@ class AesOperations {
     final ctx = _b.evpCipherCtxNew();
     if (ctx == nullptr) _fail('EVP_CIPHER_CTX_new');
     try {
-      final kp = calloc<Uint8>(key.length);
-      final ivp = calloc<Uint8>(iv.length);
-      kp.asTypedList(key.length).setAll(0, key);
-      ivp.asTypedList(iv.length).setAll(0, iv);
-      try {
+      return withSecretBytes(_b, key, (kp) {
+        return withSecretBytes(_b, iv, (ivp) {
         if (encrypt) {
           _check1(
-            _b.evpEncryptInitEx(ctx, cipher, nullptr, kp, ivp),
-            'EVP_EncryptInit_ex(GCM)',
+            _b.evpEncryptInitEx(ctx, cipher, nullptr, nullptr, nullptr),
+            'EVP_EncryptInit_ex(GCM cipher)',
+          );
+          _check1(
+            _b.evpCipherCtxCtrl(ctx, 0x9, iv.length, nullptr),
+            'EVP_CIPHER_CTX_ctrl(SET_IVLEN)',
+          );
+          _check1(
+            _b.evpEncryptInitEx(ctx, nullptr, nullptr, kp, ivp),
+            'EVP_EncryptInit_ex(GCM key/iv)',
           );
         } else {
           _check1(
-            _b.evpDecryptInitEx(ctx, cipher, nullptr, kp, ivp),
-            'EVP_DecryptInit_ex(GCM)',
+            _b.evpDecryptInitEx(ctx, cipher, nullptr, nullptr, nullptr),
+            'EVP_DecryptInit_ex(GCM cipher)',
+          );
+          _check1(
+            _b.evpCipherCtxCtrl(ctx, 0x9, iv.length, nullptr),
+            'EVP_CIPHER_CTX_ctrl(SET_IVLEN)',
+          );
+          _check1(
+            _b.evpDecryptInitEx(ctx, nullptr, nullptr, kp, ivp),
+            'EVP_DecryptInit_ex(GCM key/iv)',
           );
           if (tag != null) {
             if (tag.length != 16) {
@@ -279,9 +295,27 @@ class AesOperations {
             final aadWritten = calloc<Int>();
             try {
               if (encrypt) {
-                _b.evpEncryptUpdate(ctx, nullptr, aadWritten, aadP, aad.length);
+                _check1(
+                  _b.evpEncryptUpdate(
+                    ctx,
+                    nullptr,
+                    aadWritten,
+                    aadP,
+                    aad.length,
+                  ),
+                  'EVP_EncryptUpdate(GCM AAD)',
+                );
               } else {
-                _b.evpDecryptUpdate(ctx, nullptr, aadWritten, aadP, aad.length);
+                _check1(
+                  _b.evpDecryptUpdate(
+                    ctx,
+                    nullptr,
+                    aadWritten,
+                    aadP,
+                    aad.length,
+                  ),
+                  'EVP_DecryptUpdate(GCM AAD)',
+                );
               }
             } finally {
               calloc.free(aadWritten);
@@ -295,9 +329,7 @@ class AesOperations {
         final out = calloc<Uint8>(outLen);
         final written = calloc<Int>();
         try {
-          final dp = calloc<Uint8>(data.length);
-          try {
-            dp.asTypedList(data.length).setAll(0, data);
+          return withSecretBytes(_b, data, (dp) {
             if (encrypt) {
               _check1(
                 _b.evpEncryptUpdate(ctx, out, written, dp, data.length),
@@ -356,17 +388,14 @@ class AesOperations {
             } finally {
               calloc.free(finalWritten);
             }
-          } finally {
-            calloc.free(dp);
-          }
+          });
         } finally {
+          if (!encrypt) _b.opensslCleanse(out.cast(), outLen);
           calloc.free(out);
           calloc.free(written);
         }
-      } finally {
-        calloc.free(kp);
-        calloc.free(ivp);
-      }
+        });
+      });
     } finally {
       _b.evpCipherCtxFree(ctx);
     }

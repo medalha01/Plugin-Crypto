@@ -116,6 +116,14 @@ KeyPair _getRsaKeyPair() {
 
 
 void main() {
+  const expectedPlatform = String.fromEnvironment(
+    'PLUGIN_CRYPTO_EXPECT_PLATFORM',
+  );
+  if (expectedPlatform == 'android' && !Platform.isAndroid) {
+    throw StateError(
+      'Android integration phase is running on ${Platform.operatingSystem}',
+    );
+  }
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
 

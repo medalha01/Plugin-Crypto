@@ -257,11 +257,6 @@ void main() {
 
     test('openssl CMS sign -> Dart cmsVerify succeeds', () async {
       _skipIfNoOpenSsl();
-      final ver = _opensslVersion();
-      if (ver != null && ver < 4) {
-        return; // openssl 3.x CMS PEM incompatible with library 4.0
-      }
-
       final keyFile = '/tmp/i2b_ec_key.pem';
       final certFile = '/tmp/i2b_ec_cert.pem';
       final dataFile = '/tmp/i2b_data.bin';

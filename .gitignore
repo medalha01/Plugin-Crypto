@@ -49,6 +49,9 @@ Thumbs.db
 # ── FIPS build directory (separate build) ───────────────────────────────────
 plugin_crypto/native/linux/x86_64_fips/
 
+# ── Presentation ────────────────────────────────────────────────────────────
+presentation/
+
 # ── Cleaning/temp scripts (not part of the project) ─────────────────────────
 _clean_comments.py
 _translate_docs.py

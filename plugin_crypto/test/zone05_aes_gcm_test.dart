@@ -132,6 +132,19 @@ void main() {
 
 
   group('key validation', () {
+    for (final invalidLength in [0, 1, 11, 13, 16]) {
+      test('AES-GCM rejects $invalidLength-byte nonce before FFI', () {
+        expect(
+          () => api.aes128GcmEncrypt(
+            aes128Key,
+            Uint8List(invalidLength),
+            plaintext,
+          ),
+          throwsArgumentError,
+        );
+      });
+    }
+
     test('AES-128-GCM with 32-byte key throws', () {
       expect(
         () => api.aes128GcmEncrypt(aes256Key, iv12, plaintext),

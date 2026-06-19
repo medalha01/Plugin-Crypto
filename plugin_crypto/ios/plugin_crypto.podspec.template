@@ -1,0 +1,13 @@
+Pod::Spec.new do |s|
+  s.name             = 'plugin_crypto'
+  s.version          = '0.0.1'
+  s.summary          = 'OpenSSL 4 FFI plugin (staged iOS support)'
+  s.homepage         = 'https://github.com/medalha01/Plugin-Crypto'
+  s.license          = { :file => '../LICENSE' }
+  s.author           = { 'PluginCrypto' => 'maintainers' }
+  s.source           = { :path => '.' }
+  s.platform         = :ios, '13.0'
+  s.vendored_frameworks = 'Frameworks/PluginCryptoOpenSSL.xcframework'
+  s.dependency 'Flutter'
+  s.static_framework = true
+end

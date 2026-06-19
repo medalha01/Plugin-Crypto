@@ -1019,37 +1019,52 @@ class ConstantTimeMetrics {
 
 /// Verification results for memory zeroization / secure cleanup.
 class ZeroizationMetrics {
+  /// `verified`, `failed`, or `unavailable`.
+  final String verificationStatus;
+  /// Memory covered by this evidence. Dart caller-owned memory is excluded.
+  final String scope;
   final bool keyMaterialWipedAfterFree;
   final bool intermediateBuffersCleared;
   final bool opensslCleanseVerified;
   final bool cryptoFreeVerified;
+  final bool fipsProviderActive;
   final String evidence;
   final String methodology;
 
   const ZeroizationMetrics({
+    required this.verificationStatus,
+    required this.scope,
     required this.keyMaterialWipedAfterFree,
     required this.intermediateBuffersCleared,
     required this.opensslCleanseVerified,
     required this.cryptoFreeVerified,
+    required this.fipsProviderActive,
     required this.evidence,
     required this.methodology,
   });
 
   Map<String, dynamic> toJson() => {
+    'verification_status': verificationStatus,
+    'scope': scope,
     'key_material_wiped_after_free': keyMaterialWipedAfterFree,
     'intermediate_buffers_cleared': intermediateBuffersCleared,
     'openssl_cleanse_verified': opensslCleanseVerified,
     'crypto_free_verified': cryptoFreeVerified,
+    'fips_provider_active': fipsProviderActive,
     'evidence': evidence,
     'methodology': methodology,
   };
 
   factory ZeroizationMetrics.fromJson(Map<String, dynamic> json) {
     return ZeroizationMetrics(
+      verificationStatus:
+          json['verification_status'] as String? ?? 'unavailable',
+      scope: json['scope'] as String? ?? 'legacy-unspecified',
       keyMaterialWipedAfterFree: json['key_material_wiped_after_free'] as bool,
       intermediateBuffersCleared: json['intermediate_buffers_cleared'] as bool,
       opensslCleanseVerified: json['openssl_cleanse_verified'] as bool,
       cryptoFreeVerified: json['crypto_free_verified'] as bool,
+      fipsProviderActive: json['fips_provider_active'] as bool? ?? false,
       evidence: json['evidence'] as String,
       methodology: json['methodology'] as String,
     );
@@ -1126,6 +1141,10 @@ class FuzzingMetrics {
 
 /// Throughput measurement for a specific isolate count.
 class IsolateScalingPoint {
+  /// `measured` or `failed`; synthetic values are never emitted.
+  final String status;
+  final String measurementSource;
+  final String? error;
   final int isolateCount;
   final double totalThroughputMbps;
   final double throughputPerIsolateMbps;
@@ -1133,6 +1152,9 @@ class IsolateScalingPoint {
   final double totalSuiteMs;
 
   const IsolateScalingPoint({
+    this.status = 'measured',
+    this.measurementSource = 'plugin_crypto_native',
+    this.error,
     required this.isolateCount,
     required this.totalThroughputMbps,
     required this.throughputPerIsolateMbps,
@@ -1141,6 +1163,9 @@ class IsolateScalingPoint {
   });
 
   Map<String, dynamic> toJson() => {
+    'status': status,
+    'measurement_source': measurementSource,
+    if (error != null) 'error': error,
     'isolate_count': isolateCount,
     'total_throughput_mbps': totalThroughputMbps,
     'throughput_per_isolate_mbps': throughputPerIsolateMbps,
@@ -1150,6 +1175,10 @@ class IsolateScalingPoint {
 
   factory IsolateScalingPoint.fromJson(Map<String, dynamic> json) {
     return IsolateScalingPoint(
+      status: json['status'] as String? ?? 'measured',
+      measurementSource:
+          json['measurement_source'] as String? ?? 'legacy-unspecified',
+      error: json['error'] as String?,
       isolateCount: json['isolate_count'] as int,
       totalThroughputMbps: (json['total_throughput_mbps'] as num).toDouble(),
       throughputPerIsolateMbps: (json['throughput_per_isolate_mbps'] as num)

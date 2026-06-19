@@ -26,10 +26,10 @@ void main() {
 
   group('getLastError / clearErrors', () {
     test('error queue cleared after failure, getLastError returns null', () {
-      try {
-        _api().parseX509Certificate(_pem('not a valid certificate'));
-      } catch (_) {
-      }
+      expect(
+        () => _api().parseX509Certificate(_pem('not a valid certificate')),
+        throwsA(isA<StateError>()),
+      );
 
       final err1 = _api().getLastError();
       expect(err1, isNull);
@@ -43,9 +43,10 @@ void main() {
 
   group('Error queue isolation', () {
     test('operation succeeds after clearing previous error queue', () {
-      try {
-        _api().parseX509Certificate(_pem('not a valid certificate'));
-      } catch (_) {}
+      expect(
+        () => _api().parseX509Certificate(_pem('not a valid certificate')),
+        throwsA(isA<StateError>()),
+      );
 
       expect(_api().getLastError(), isNull);
 
@@ -56,9 +57,10 @@ void main() {
     });
 
     test('sha256 succeeds even without explicitly clearing stale errors', () {
-      try {
-        _api().parseX509Certificate(_pem('not a valid certificate'));
-      } catch (_) {}
+      expect(
+        () => _api().parseX509Certificate(_pem('not a valid certificate')),
+        throwsA(isA<StateError>()),
+      );
 
       final hash = _api().sha256(Uint8List.fromList(utf8.encode('world')));
 

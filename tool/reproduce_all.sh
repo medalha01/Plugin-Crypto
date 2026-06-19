@@ -398,8 +398,18 @@ phase2_metrics() {
 
   set +e
   cd "$PLUGIN_CRYPTO"
-  flutter test --reporter compact --tags metrics --run-skipped > "$log" 2>&1
-  local rc=$?
+  local shim_path
+  shim_path="$(bash tool/build_test_shim.sh)"
+  local shim_rc=$?
+  local rc
+  if [[ "$shim_rc" -ne 0 ]]; then
+    echo "Failed to build zeroization test shim" > "$log"
+    rc="$shim_rc"
+  else
+    export PLUGIN_CRYPTO_TEST_SHIM="$shim_path"
+    flutter test --reporter compact --tags metrics --run-skipped > "$log" 2>&1
+    rc=$?
+  fi
   set -e
 
   local t1 elapsed_ms
@@ -551,7 +561,10 @@ phase4_android_integration() {
 
     set +e
     cd "$TCC_TEST_APP"
-    flutter test "integration_test/$test_file" --reporter compact > "$log" 2>&1
+    flutter test "integration_test/$test_file" \
+      -d "$ANDROID_DEVICE" \
+      --dart-define=PLUGIN_CRYPTO_EXPECT_PLATFORM=android \
+      --reporter compact > "$log" 2>&1
     local frc=$?
     set -e
 
@@ -619,12 +632,12 @@ phase5_fips_pq() {
   if [[ ! -f "$fips_script" ]]; then
     echo -e "${RED}FIPS test script not found: $fips_script${NC}"
     PHASE_TIMES+=("skipped")
-    PHASE_RESULTS+=("SKIP")
+    PHASE_RESULTS+=("FAIL")
     PHASE5_TOTAL=0
     PHASE5_PASSED=0
     PHASE5_SKIPPED=0
     PHASE5_FAILED=0
-    PHASE5_TIME="skipped"
+    PHASE5_TIME="failed"
     return 1
   fi
 
@@ -696,7 +709,11 @@ phase5_fips_pq() {
   PHASE5_TOTAL=$(( passed + skipped + failed ))
   PHASE5_TIME="$elapsed_str"
 
-  if [[ "$rc" -eq 0 ]]; then
+  if [[ "$rc" -eq 77 ]]; then
+    echo -e "${YELLOW}Phase 5: SKIP${NC}  (FIPS/PQ prerequisites unavailable)"
+    PHASE_RESULTS+=("SKIP")
+    PHASE5_RC=0
+  elif [[ "$rc" -eq 0 ]]; then
     echo -e "${GREEN}Phase 5: PASS${NC}  (+$passed ~$skipped -$failed in $elapsed_str)"
     PHASE_RESULTS+=("PASS")
     PHASE5_RC=0

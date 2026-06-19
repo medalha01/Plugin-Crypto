@@ -7,6 +7,7 @@ import 'package:ffi/ffi.dart';
 
 import '../ffi/openssl_bindings.dart';
 import 'utils/openssl_error.dart';
+import 'utils/secret_memory.dart';
 
 /// Stateless hashing and random-byte operations using OpenSSL.
 class CryptoOperations {
@@ -37,16 +38,12 @@ class CryptoOperations {
     if (ctx == nullptr) _fail('EVP_MD_CTX_new');
     try {
       _check1(_b.evpDigestInitEx(ctx, md, nullptr), 'EVP_DigestInit_ex');
-      final dp = calloc<Uint8>(data.length);
-      try {
-        dp.asTypedList(data.length).setAll(0, data);
+      withSecretBytes(_b, data, (dp) {
         _check1(
           _b.evpDigestUpdate(ctx, dp.cast(), data.length),
           'EVP_DigestUpdate',
         );
-      } finally {
-        calloc.free(dp);
-      }
+      });
       final mdBuf = calloc<Uint8>(digestLen);
       final mdLen = calloc<Uint32>();
       try {

@@ -90,7 +90,7 @@ void main() {
     utf8.encode(certPem),
     utf8.encode(keyPem),
   );
-  final cmsOk = api.cmsVerify(cms);
+  final cmsOk = api.cmsVerifySignature(cms);
   print(cmsOk); // true
 
   // ── X.509 certificate parsing ───────────────────────────
@@ -182,7 +182,8 @@ KeyCreatorFactory.create(MlDsaKeySpec(MlDsaParameterSet.mlDsa65));
 |----------|--------|-------------|-------|
 | **Linux** | Full support | `x86_64` | `libcrypto.so.4` + `libssl.so.4`, 4 providers (default, fips, legacy, oqsprovider) |
 | **Android** | Full support | `arm64-v8a`, `armeabi-v7a`, `x86_64` | 3 ABIs with prebuilt `.so` in `jniLibs/`, NDK 27.1 |
-| **iOS** | **Help wanted** | `arm64` | Plugin scaffold exists (`ffiPlugin: true` in `pubspec.yaml`), OpenSSL `.xcframework` + `oqsprovider` need to be compiled and linked. See [Contributing](#contributing). |
+| **iOS** | **Staged, inactive** | device `arm64`; simulator `arm64`/`x86_64` planned | XCFramework layout is documented, but iOS is not declared or supported until native artifacts are built and validated. |
+| **Windows** | **Staged, inactive** | `x64` planned | CMake and DLL layout are prepared, but Windows is not declared or supported until pinned artifacts are built and validated. |
 
 The plugin uses Flutter's FFI plugin system (`ffiPlugin: true`). On Linux, shared libraries are loaded from `native/linux/x86_64/`. On Android, they ship inside the APK via `jniLibs/`. No method channels are used for cryptographic operations.
 
@@ -341,6 +342,7 @@ flutter test
 flutter test --tags slow
 
 # Run everything, including stress and soak tests
+export PLUGIN_CRYPTO_TEST_SHIM="$(bash tool/build_test_shim.sh)"
 flutter test --run-skipped
 ```
 
@@ -389,9 +391,9 @@ Contributions are welcome, especially in these areas:
 
 ### High priority
 
-- **iOS support** — The plugin scaffold declares `ios: ffiPlugin: true` in `pubspec.yaml`. The missing piece is compiling OpenSSL 4.0.0 + `oqsprovider` as an `.xcframework` for `arm64` and placing it in `plugin_crypto/ios/`. The Dart FFI layer is platform-agnostic and will work unchanged.
+- **iOS support** — Dormant device/simulator XCFramework layout exists under `ios/` and `native/ios/`; the platform declaration remains disabled until artifacts are built and validated.
 - **macOS support** — Similar to iOS: needs OpenSSL `.dylib` files compiled for `arm64` and `x86_64`.
-- **Windows support** — OpenSSL `.dll` files for `x64`, placed in the appropriate Flutter Windows plugin directory.
+- **Windows support** — Dormant CMake/package layout exists for pinned x64 DLLs; the platform declaration remains disabled until artifacts are built and validated.
 
 ### General
 

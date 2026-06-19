@@ -182,6 +182,9 @@ class PluginCryptoOperations implements CryptographicOperations {
   }
 
   @override
+  @Deprecated(
+    'Use cmsVerifySignature or cmsVerifyTrusted to make trust semantics explicit.',
+  )
   bool cmsVerify(
     Uint8List signedData, {
     Uint8List? content,
@@ -190,6 +193,27 @@ class PluginCryptoOperations implements CryptographicOperations {
   }) {
     if (signedData.isEmpty) throw ArgumentError('signedData must be non-empty');
     return _api.cmsVerify(signedData, trustedCert: caCert);
+  }
+
+  @override
+  bool cmsVerifySignature(Uint8List signedData) {
+    if (signedData.isEmpty) throw ArgumentError('signedData must be non-empty');
+    return _api.cmsVerifySignature(signedData);
+  }
+
+  @override
+  bool cmsVerifyTrusted(
+    Uint8List signedData, {
+    required Uint8List trustAnchor,
+    List<Uint8List> intermediates = const [],
+  }) {
+    if (signedData.isEmpty) throw ArgumentError('signedData must be non-empty');
+    if (trustAnchor.isEmpty) throw ArgumentError('trustAnchor must be non-empty');
+    return _api.cmsVerifyTrusted(
+      signedData,
+      trustAnchor: trustAnchor,
+      intermediates: intermediates,
+    );
   }
 
   @override

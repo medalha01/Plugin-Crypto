@@ -47,11 +47,20 @@ abstract interface class CryptographicOperations {
     List<Uint8List>? caCerts,
     bool detached = false,
   });
+  @Deprecated(
+    'Use cmsVerifySignature or cmsVerifyTrusted to make trust semantics explicit.',
+  )
   bool cmsVerify(
     Uint8List signedData, {
     Uint8List? content,
     Uint8List? caCert,
     bool noSignerCertVerify = false,
+  });
+  bool cmsVerifySignature(Uint8List signedData);
+  bool cmsVerifyTrusted(
+    Uint8List signedData, {
+    required Uint8List trustAnchor,
+    List<Uint8List> intermediates = const [],
   });
   Uint8List cmsEncrypt(Uint8List data, List<Uint8List> recipientCerts);
   Uint8List cmsDecrypt(

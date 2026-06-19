@@ -9,6 +9,7 @@ import '../ffi/openssl_bindings.dart';
 import 'crypto_data.dart';
 import 'utils/bio_utils.dart';
 import 'utils/openssl_error.dart';
+import 'utils/secret_memory.dart';
 
 /// RSA/EC key generation and sign/verify/encrypt/decrypt operations.
 class AsymmetricOperations {
@@ -102,16 +103,12 @@ class AsymmetricOperations {
           final sig = calloc<Uint8>(len);
           try {
             sigLen.value = len;
-            final dp = calloc<Uint8>(data.length);
-            try {
-              dp.asTypedList(data.length).setAll(0, data);
+            withSecretBytes(_b, data, (dp) {
               _check1(
                 _b.evpDigestSign(ctx, sig, sigLen, dp, data.length),
                 'EVP_DigestSign',
               );
-            } finally {
-              calloc.free(dp);
-            }
+            });
             return Uint8List.fromList(sig.asTypedList(sigLen.value));
           } finally {
             calloc.free(sig);
@@ -155,9 +152,7 @@ class AsymmetricOperations {
             'EVP_DigestVerifyInit(ML-DSA)',
           );
         }
-        final dp = calloc<Uint8>(data.length);
-        try {
-          dp.asTypedList(data.length).setAll(0, data);
+        return withSecretBytes(_b, data, (dp) {
           final sig = calloc<Uint8>(signature.length);
           try {
             sig.asTypedList(signature.length).setAll(0, signature);
@@ -172,9 +167,7 @@ class AsymmetricOperations {
           } finally {
             calloc.free(sig);
           }
-        } finally {
-          calloc.free(dp);
-        }
+        });
       } finally {
         _b.evpMdCtxFree(ctx);
       }
@@ -195,9 +188,7 @@ class AsymmetricOperations {
         _check1(_b.evpPkeyEncryptInit(ctx), 'EVP_PKEY_encrypt_init');
         final outLen = calloc<Size>();
         try {
-          final dp = calloc<Uint8>(plaintext.length);
-          try {
-            dp.asTypedList(plaintext.length).setAll(0, plaintext);
+          return withSecretBytes(_b, plaintext, (dp) {
             _b.evpPkeyEncrypt(ctx, nullptr, outLen, dp, plaintext.length);
             final len = outLen.value;
             if (len == 0) _fail('EVP_PKEY_encrypt(size)');
@@ -210,11 +201,10 @@ class AsymmetricOperations {
               );
               return Uint8List.fromList(out.asTypedList(outLen.value));
             } finally {
+              _b.opensslCleanse(out.cast(), len);
               calloc.free(out);
             }
-          } finally {
-            calloc.free(dp);
-          }
+          });
         } finally {
           calloc.free(outLen);
         }
@@ -251,6 +241,7 @@ class AsymmetricOperations {
               );
               return Uint8List.fromList(out.asTypedList(outLen.value));
             } finally {
+              _b.opensslCleanse(out.cast(), len);
               calloc.free(out);
             }
           } finally {
@@ -370,17 +361,19 @@ class AsymmetricOperations {
 
 
   EVP_PKEY _loadPrivateKey(Uint8List data) {
-    final bio = bioFromData(_b, data);
-    if (bio == nullptr) _fail('BIO_new(_loadPrivateKey)');
-    try {
-      final pkey = _b.pemReadBioPrivateKey(bio, nullptr, nullptr, nullptr);
-      if (pkey == nullptr) {
-        _fail('PEM_read_bio_PrivateKey');
+    return withSecretBytes(_b, data, (pointer) {
+      final bio = _b.bioNewMemBuf(pointer.cast(), data.length);
+      if (bio == nullptr) _fail('BIO_new_mem_buf(_loadPrivateKey)');
+      try {
+        final pkey = _b.pemReadBioPrivateKey(bio, nullptr, nullptr, nullptr);
+        if (pkey == nullptr) {
+          _fail('PEM_read_bio_PrivateKey');
+        }
+        return pkey;
+      } finally {
+        _b.bioFree(bio);
       }
-      return pkey;
-    } finally {
-      _b.bioFree(bio);
-    }
+    });
   }
 
   EVP_PKEY _loadPublicKey(Uint8List data) {

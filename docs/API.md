@@ -294,7 +294,7 @@ processa AAD opcional (autenticado mas nao cifrado), extrai tag de 16 bytes.
 | Parametro | Tipo | Restricoes | Faixa Valida |
 |---|---|---|---|
 | `key` | `Uint8List` | Exatamente 16 bytes | 16 bytes fixo |
-| `iv` | `Uint8List` | 12 bytes recomendado (NIST) | 1..N bytes |
+| `iv` | `Uint8List` | Exatamente 12 bytes (nonce NIST) | 12 bytes fixo |
 | `plaintext` | `Uint8List` | Qualquer tamanho | 0..N bytes |
 | `aad` | `Uint8List?` | Opcional | 0..N bytes |
 
@@ -310,7 +310,7 @@ processa AAD opcional (autenticado mas nao cifrado), extrai tag de 16 bytes.
 | Parametro | Tipo | Restricoes | Faixa Valida |
 |---|---|---|---|
 | `key` | `Uint8List` | Exatamente 16 bytes | 16 bytes fixo |
-| `iv` | `Uint8List` | Deve ser identico ao usado na cifracao | 1..N bytes |
+| `iv` | `Uint8List` | Exatamente 12 bytes e identico ao usado na cifracao | 12 bytes fixo |
 | `ciphertext` | `Uint8List` | Qualquer tamanho | 0..N bytes |
 | `tag` | `Uint8List` | Exatamente 16 bytes | 16 bytes fixo |
 | `aad` | `Uint8List?` | Deve ser identico ao usado na cifracao | 0..N bytes |
@@ -358,7 +358,7 @@ Usa `EVP_CIPHER_fetch("AES-256-GCM")`, configura IV de 12 bytes (NIST SP 800-38D
 | Parametro | Tipo | Restricoes | Faixa Valida |
 |---|---|---|---|
 | `key` | `Uint8List` | Exatamente 32 bytes | 32 bytes fixo |
-| `iv` | `Uint8List` | 12 bytes recomendado | 1..N bytes |
+| `iv` | `Uint8List` | Exatamente 12 bytes | 12 bytes fixo |
 | `plaintext` | `Uint8List` | Qualquer tamanho | 0..N bytes |
 | `aad` | `Uint8List?` | Opcional | 0..N bytes |
 
@@ -374,7 +374,7 @@ Usa `EVP_CIPHER_fetch("AES-256-GCM")`, configura IV de 12 bytes (NIST SP 800-38D
 | Parametro | Tipo | Restricoes | Faixa Valida |
 |---|---|---|---|
 | `key` | `Uint8List` | Exatamente 32 bytes | 32 bytes fixo |
-| `iv` | `Uint8List` | Deve corresponder ao IV usado na cifracao | 1..N bytes |
+| `iv` | `Uint8List` | Exatamente 12 bytes e igual ao usado na cifracao | 12 bytes fixo |
 | `ciphertext` | `Uint8List` | Qualquer tamanho | 0..N bytes |
 | `tag` | `Uint8List` | Exatamente 16 bytes | 16 bytes fixo |
 | `aad` | `Uint8List?` | Deve corresponder ao AAD usado na cifracao | 0..N bytes |
@@ -705,9 +705,13 @@ print('Cadeia valida: $cadeiaValida');
 | **Assinatura** | `Uint8List cmsSign(Uint8List data, Uint8List certPem, Uint8List keyPem)` |
 | **Retorno** | `Uint8List`  CMS SignedData em DER (flag `CMS_BINARY`) |
 | **Excecoes** | `StateError("PEM_read_bio_X509 failed: ...")`, `StateError("PEM_read_bio_PrivateKey failed: ...")`, `StateError("CMS_sign failed: ...")` |
-| **Chamadas C** | `PEM_read_bio_X509(certBio)` → `PEM_read_bio_PrivateKey(keyBio)` → `BIO_new_mem_buf(data, dataLen)` → `CMS_sign(x509, pkey, nullptr, inBio, CMS_BINARY)` → `PEM_write_bio_CMS(bio, cms)` → extrai DER |
+| **Chamadas C** | carrega certificado PEM/DER → `PEM_read_bio_PrivateKey(keyBio)` → `BIO_new_mem_buf(data, dataLen)` → `CMS_sign(x509, pkey, nullptr, inBio, CMS_BINARY)` → `i2d_CMS_bio(bio, cms)` |
 
 ### 14.2 `bool cmsVerify(Uint8List signedData, {Uint8List? trustedCert})`
+
+> Deprecated compatibility wrapper. Use `cmsVerifySignature` for
+> cryptographic integrity without a trust assertion, or `cmsVerifyTrusted`
+> with an explicit trust anchor and optional intermediates.
 
 | Parametro | Tipo | Restricoes | Faixa Valida |
 |---|---|---|---|
@@ -754,7 +758,7 @@ Recebe `data` (bytes a cifrar) e `certPem` (certificado X.509 do destinatario em
 | **Assinatura** | `Uint8List cmsEncrypt(Uint8List data, Uint8List certPem)` |
 | **Retorno** | `Uint8List`  CMS EnvelopedData em DER (AES-256-CBC para conteudo, RSA para chave de sessao) |
 | **Excecoes** | `StateError("PEM_read_bio_X509 failed: ...")`, `StateError("CMS_encrypt failed: ...")` |
-| **Chamadas C** | `PEM_read_bio_X509(certBio)` → `OPENSSL_sk_new_null()` → `OPENSSL_sk_push(certs, x509)` → `BIO_new_mem_buf(data, dataLen)` → `CMS_encrypt(certs, inBio, EVP_aes_256_cbc(), 0)` → `PEM_write_bio_CMS(bio, cms)` → extrai DER |
+| **Chamadas C** | carrega certificado PEM/DER → `OPENSSL_sk_new_null()` → `OPENSSL_sk_push(certs, x509)` → `BIO_new_mem_buf(data, dataLen)` → `CMS_encrypt(certs, inBio, EVP_aes_256_cbc(), 0)` → `i2d_CMS_bio(bio, cms)` |
 
 ### 15.2 `Uint8List cmsDecrypt(Uint8List encryptedData, Uint8List certPem, Uint8List keyPem)`
 
@@ -792,6 +796,11 @@ print(utf8.decode(decifrado)); // Documento sigiloso para destinatario
 ## 16. CAdES-BES (CMS Advanced Electronic Signatures)
 
 ### 16.1 `Uint8List cmsSignCades(Uint8List data, Uint8List certPem, Uint8List keyPem, {Uint8List? caCertPem, List<Uint8List>? intermediates, bool addSigningTime = true, bool addMessageDigest = true})`
+
+> Deprecated compatibility wrapper. New code should call `cmsSignCadesBes`.
+> CAdES-BES requires `messageDigest`, `signingTime`, and
+> `SigningCertificateV2`; requests that disable mandatory attributes are
+> rejected instead of producing a falsely labelled signature.
 
 | Parametro | Tipo | Restricoes | Faixa Valida |
 |---|---|---|---|

@@ -881,13 +881,14 @@ class CryptoMicroBenchmark {
 ### 6.12 `metrics/zeroization.dart`
 
 ```dart
-static bool ZeroizationVerifier.isOpensslCleanseBound()     // sempre true (stub)
-static bool ZeroizationVerifier.isCryptoFreeBound()         // sempre true (stub)
-static bool ZeroizationVerifier.verifyKeyMaterialWiped({required dynamic api})
-static bool ZeroizationVerifier.verifyIntermediateBuffersCleared({required dynamic api})
+static bool ZeroizationVerifier.isOpensslCleanseBound(OpenSslBindings bindings)
+static bool ZeroizationVerifier.isCryptoFreeBound(OpenSslBindings bindings)
 ```
 
-**Fluxo `verifyKeyMaterialWiped`**: gera 2x RSA-2048 keypairs -> compara fingerprints. Retorna `true` se diferentes. **Fluxo `verifyIntermediateBuffersCleared`**: 1000 iteracoes `sha256` -> verifica unicidade de todos os digests.
+As métricas de zeroização observam buffers temporários nativos imediatamente
+após `OPENSSL_cleanse` e antes de `calloc.free`, usando um callback de teste e
+um shim nativo. Memória pertencente ao chamador Dart e alocações internas do
+OpenSSL não fazem parte dessa garantia.
 
 ---
 

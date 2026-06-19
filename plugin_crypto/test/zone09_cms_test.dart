@@ -84,6 +84,7 @@ void main() {
 
       expect(signedData, isNotNull);
       expect(signedData.isNotEmpty, isTrue);
+      expect(signedData.first, equals(0x30), reason: 'CMS output must be DER');
     });
 
     test('cmsVerify returns true for valid EC-signed data', () {
@@ -92,9 +93,63 @@ void main() {
       );
 
       final signedData = crypto.cmsSign(data, ecCertPem, ecKeyPem);
-      final result = crypto.cmsVerify(signedData, trustedCert: ecCertPem);
+      final result = crypto.cmsVerifyTrusted(
+        signedData,
+        trustAnchor: ecCertPem,
+      );
 
       expect(result, isTrue);
+    });
+
+    test('signature-only verification is explicit and succeeds', () {
+      final data = Uint8List.fromList(utf8.encode('signature-only CMS'));
+      final signedData = crypto.cmsSign(data, ecCertPem, ecKeyPem);
+      expect(crypto.cmsVerifySignature(signedData), isTrue);
+    });
+
+    test('legacy PEM CMS input remains accepted', () async {
+      final signedData = crypto.cmsSign(
+        Uint8List.fromList(utf8.encode('legacy PEM CMS')),
+        ecCertPem,
+        ecKeyPem,
+      );
+      final directory = await Directory.systemTemp.createTemp('cms-pem-');
+      final derFile = File('${directory.path}/signature.der');
+      final pemFile = File('${directory.path}/signature.pem');
+      try {
+        await derFile.writeAsBytes(signedData);
+        final conversion = await Process.run('openssl', [
+          'cms',
+          '-cmsout',
+          '-inform',
+          'DER',
+          '-in',
+          derFile.path,
+          '-outform',
+          'PEM',
+          '-out',
+          pemFile.path,
+        ]);
+        expect(conversion.exitCode, 0, reason: '${conversion.stderr}');
+        expect(
+          crypto.cmsVerifySignature(await pemFile.readAsBytes()),
+          isTrue,
+        );
+      } finally {
+        await directory.delete(recursive: true);
+      }
+    });
+
+    test('trusted verification rejects malformed trust material', () {
+      final data = Uint8List.fromList(utf8.encode('trusted CMS'));
+      final signedData = crypto.cmsSign(data, ecCertPem, ecKeyPem);
+      expect(
+        () => crypto.cmsVerifyTrusted(
+          signedData,
+          trustAnchor: Uint8List.fromList(utf8.encode('not a certificate')),
+        ),
+        throwsA(isA<StateError>()),
+      );
     });
 
     test('cmsVerify fails with mismatched trusted cert', () {

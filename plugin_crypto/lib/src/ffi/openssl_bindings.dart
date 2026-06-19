@@ -77,6 +77,19 @@ typedef CRYPTO_freeNative =
 typedef CRYPTO_freeDart =
     void Function(Pointer<Void> ptr, Pointer<Utf8> file, int line);
 
+typedef OPENSSL_cleanseNative =
+    NativeFunction<Void Function(Pointer<Void>, Size)>;
+typedef OPENSSL_cleanseDart =
+    void Function(Pointer<Void> ptr, int len);
+
+typedef ASN1_INTEGER_to_BNNative =
+    NativeFunction<BIGNUM Function(ASN1_INTEGER, BIGNUM)>;
+typedef ASN1_INTEGER_to_BNDart =
+    BIGNUM Function(ASN1_INTEGER value, BIGNUM result);
+
+typedef BN_bn2hexNative = NativeFunction<Pointer<Utf8> Function(BIGNUM)>;
+typedef BN_bn2hexDart = Pointer<Utf8> Function(BIGNUM value);
+
 typedef EVP_MD_CTX_newNative = NativeFunction<EVP_MD_CTX Function()>;
 typedef EVP_MD_CTX_newDart = EVP_MD_CTX Function();
 
@@ -265,6 +278,11 @@ typedef EVP_PKEY_CTX_set_ec_paramgen_curve_nidNative =
 typedef EVP_PKEY_CTX_set_ec_paramgen_curve_nidDart =
     int Function(EVP_PKEY_CTX ctx, int nid);
 
+typedef EVP_default_properties_is_fipsNative =
+    NativeFunction<Int Function(OSSL_LIB_CTX)>;
+typedef EVP_default_properties_is_fipsDart =
+    int Function(OSSL_LIB_CTX libctx);
+
 typedef EVP_DigestSignInitNative =
     NativeFunction<
       Int Function(EVP_MD_CTX, Pointer<EVP_PKEY_CTX>, EVP_MD, ENGINE, EVP_PKEY)
@@ -436,6 +454,21 @@ typedef BN_bin2bnNative =
     NativeFunction<BIGNUM Function(Pointer<Uint8>, Int, BIGNUM)>;
 typedef BN_bin2bnDart = BIGNUM Function(Pointer<Uint8> s, int len, BIGNUM ret);
 
+typedef EVP_PKEY_get_bn_paramNative = NativeFunction<
+    Int Function(EVP_PKEY, Pointer<Utf8>, Pointer<BIGNUM>)>;
+typedef EVP_PKEY_get_bn_paramDart =
+    int Function(EVP_PKEY pkey, Pointer<Utf8> name, Pointer<BIGNUM> value);
+
+typedef EC_GROUP_new_by_curve_nameNative =
+    NativeFunction<EC_GROUP Function(Int)>;
+typedef EC_GROUP_new_by_curve_nameDart = EC_GROUP Function(int nid);
+typedef EC_GROUP_get_cofactorNative =
+    NativeFunction<Int Function(EC_GROUP, BIGNUM, Pointer<Void>)>;
+typedef EC_GROUP_get_cofactorDart =
+    int Function(EC_GROUP group, BIGNUM cofactor, Pointer<Void> context);
+typedef EC_GROUP_freeNative = NativeFunction<Void Function(EC_GROUP)>;
+typedef EC_GROUP_freeDart = void Function(EC_GROUP group);
+
 typedef PEM_read_bio_PrivateKeyNative =
     NativeFunction<
       EVP_PKEY Function(
@@ -537,6 +570,15 @@ typedef PEM_read_bio_CMSDart =
 typedef PEM_write_bio_CMSNative =
     NativeFunction<Int Function(BIO, CMS_ContentInfo)>;
 typedef PEM_write_bio_CMSDart = int Function(BIO bp, CMS_ContentInfo x);
+
+typedef i2d_CMS_bioNative =
+    NativeFunction<Int Function(BIO, CMS_ContentInfo)>;
+typedef i2d_CMS_bioDart = int Function(BIO bp, CMS_ContentInfo cms);
+
+typedef d2i_CMS_bioNative =
+    NativeFunction<CMS_ContentInfo Function(BIO, Pointer<CMS_ContentInfo>)>;
+typedef d2i_CMS_bioDart =
+    CMS_ContentInfo Function(BIO bp, Pointer<CMS_ContentInfo> cms);
 
 typedef X509_newNative = NativeFunction<X509 Function()>;
 typedef X509_newDart = X509 Function();
@@ -1240,6 +1282,15 @@ class OpenSslBindings {
   late final CRYPTO_freeDart cryptoFree = _crypto
       .lookup<CRYPTO_freeNative>('CRYPTO_free')
       .asFunction<CRYPTO_freeDart>();
+  late final OPENSSL_cleanseDart opensslCleanse = _crypto
+      .lookup<OPENSSL_cleanseNative>('OPENSSL_cleanse')
+      .asFunction<OPENSSL_cleanseDart>();
+  late final ASN1_INTEGER_to_BNDart asn1IntegerToBn = _crypto
+      .lookup<ASN1_INTEGER_to_BNNative>('ASN1_INTEGER_to_BN')
+      .asFunction<ASN1_INTEGER_to_BNDart>();
+  late final BN_bn2hexDart bnToHex = _crypto
+      .lookup<BN_bn2hexNative>('BN_bn2hex')
+      .asFunction<BN_bn2hexDart>();
 
 
   late final EVP_MD_CTX_newDart evpMdCtxNew = _crypto
@@ -1248,6 +1299,11 @@ class OpenSslBindings {
   late final EVP_MD_CTX_freeDart evpMdCtxFree = _crypto
       .lookup<EVP_MD_CTX_freeNative>('EVP_MD_CTX_free')
       .asFunction<EVP_MD_CTX_freeDart>();
+  late final EVP_default_properties_is_fipsDart evpDefaultPropertiesIsFips =
+      _crypto
+          .lookup<EVP_default_properties_is_fipsNative>(
+              'EVP_default_properties_is_fips')
+          .asFunction<EVP_default_properties_is_fipsDart>();
   late final EVP_DigestInit_exDart evpDigestInitEx = _crypto
       .lookup<EVP_DigestInit_exNative>('EVP_DigestInit_ex')
       .asFunction<EVP_DigestInit_exDart>();
@@ -1433,6 +1489,18 @@ class OpenSslBindings {
   late final BN_bin2bnDart bnBin2bn = _crypto
       .lookup<BN_bin2bnNative>('BN_bin2bn')
       .asFunction<BN_bin2bnDart>();
+  late final EVP_PKEY_get_bn_paramDart evpPkeyGetBnParam = _crypto
+      .lookup<EVP_PKEY_get_bn_paramNative>('EVP_PKEY_get_bn_param')
+      .asFunction<EVP_PKEY_get_bn_paramDart>();
+  late final EC_GROUP_new_by_curve_nameDart ecGroupNewByCurveName = _crypto
+      .lookup<EC_GROUP_new_by_curve_nameNative>('EC_GROUP_new_by_curve_name')
+      .asFunction<EC_GROUP_new_by_curve_nameDart>();
+  late final EC_GROUP_get_cofactorDart ecGroupGetCofactor = _crypto
+      .lookup<EC_GROUP_get_cofactorNative>('EC_GROUP_get_cofactor')
+      .asFunction<EC_GROUP_get_cofactorDart>();
+  late final EC_GROUP_freeDart ecGroupFree = _crypto
+      .lookup<EC_GROUP_freeNative>('EC_GROUP_free')
+      .asFunction<EC_GROUP_freeDart>();
 
 
   late final PEM_read_bio_PrivateKeyDart pemReadBioPrivateKey = _crypto
@@ -1455,6 +1523,12 @@ class OpenSslBindings {
   late final PEM_write_bio_X509Dart pemWriteBioX509 = _crypto
       .lookup<PEM_write_bio_X509Native>('PEM_write_bio_X509')
       .asFunction<PEM_write_bio_X509Dart>();
+  late final i2d_CMS_bioDart i2dCmsBio = _crypto
+      .lookup<i2d_CMS_bioNative>('i2d_CMS_bio')
+      .asFunction<i2d_CMS_bioDart>();
+  late final d2i_CMS_bioDart d2iCmsBio = _crypto
+      .lookup<d2i_CMS_bioNative>('d2i_CMS_bio')
+      .asFunction<d2i_CMS_bioDart>();
   late final X509_newDart x509New = _crypto
       .lookup<X509_newNative>('X509_new')
       .asFunction<X509_newDart>();

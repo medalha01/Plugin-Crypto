@@ -46,6 +46,12 @@ class PluginCryptoAPI {
 
   PluginCryptoAPI._() {
     _b = OpenSslBindings.create(loadCrypto(), loadSsl());
+    final version = _b.openSSLVersion(0).toDartString();
+    if (!version.startsWith('OpenSSL 4.')) {
+      throw StateError(
+        'PluginCrypto requires OpenSSL 4.x, but loaded: $version',
+      );
+    }
     final ctx = PluginCryptoContext(_b);
     _crypto = CryptoOperations(_b);
     _aes = AesOperations(_b);
@@ -212,6 +218,22 @@ class PluginCryptoAPI {
       _cms.cmsSign(data, certPem, keyPem);
 
   /// Verifica dados assinados CMS/PKCS#7 contra certificados confiáveis.
+  bool cmsVerifySignature(Uint8List signedData) =>
+      _cms.cmsVerifySignature(signedData);
+
+  bool cmsVerifyTrusted(
+    Uint8List signedData, {
+    required Uint8List trustAnchor,
+    List<Uint8List> intermediates = const [],
+  }) => _cms.cmsVerifyTrusted(
+    signedData,
+    trustAnchor: trustAnchor,
+    intermediates: intermediates,
+  );
+
+  @Deprecated(
+    'Use cmsVerifySignature or cmsVerifyTrusted to make trust semantics explicit.',
+  )
   bool cmsVerify(Uint8List signedData, {Uint8List? trustedCert}) =>
       _cms.cmsVerify(signedData, trustedCert: trustedCert);
 
@@ -229,6 +251,7 @@ class PluginCryptoAPI {
   ) => _cms.cmsDecrypt(encryptedData, certPem, keyPem);
 
 
+  @Deprecated('Use cmsSignCadesBes; CAdES-BES attributes are mandatory.')
   Uint8List cmsSignCades(
     Uint8List data,
     Uint8List certPem,
@@ -245,6 +268,20 @@ class PluginCryptoAPI {
     intermediates: intermediates,
     addSigningTime: addSigningTime,
     addMessageDigest: addMessageDigest,
+  );
+
+  Uint8List cmsSignCadesBes(
+    Uint8List data,
+    Uint8List certPem,
+    Uint8List keyPem, {
+    Uint8List? caCertPem,
+    List<Uint8List>? intermediates,
+  }) => _cms.cmsSignCadesBes(
+    data,
+    certPem,
+    keyPem,
+    caCertPem: caCertPem,
+    intermediates: intermediates,
   );
 
 

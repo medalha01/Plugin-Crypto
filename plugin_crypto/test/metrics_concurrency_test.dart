@@ -10,7 +10,7 @@ MetricsCollector get _collector =>
     MetricsCollector.instance ?? MetricsCollector.create();
 
 void main() {
-  group('Isolate scaling — synthetic', () {
+  group('Isolate scaling — native plugin operations', () {
     test('1 isolate baseline produces valid result shape', () async {
       final r = await IsolateBenchmark.measureIsolateScaling(
         isolateCount: 1,
@@ -22,6 +22,8 @@ void main() {
       expect(r.containsKey('throughputPerIsolateMbps'), isTrue);
       expect(r.containsKey('scalingEfficiency'), isTrue);
       expect(r.containsKey('totalSuiteMs'), isTrue);
+      expect(r['status'], 'measured');
+      expect(r['measurementSource'], 'plugin_crypto_native');
 
       _collector.recordScalingPoint(
         IsolateScalingPoint(
@@ -31,6 +33,8 @@ void main() {
               .toDouble(),
           scalingEfficiency: (r['scalingEfficiency'] as num).toDouble(),
           totalSuiteMs: (r['totalSuiteMs'] as num).toDouble(),
+          status: r['status'] as String,
+          measurementSource: r['measurementSource'] as String,
         ),
       );
     });
@@ -52,6 +56,8 @@ void main() {
               .toDouble(),
           scalingEfficiency: (r['scalingEfficiency'] as num).toDouble(),
           totalSuiteMs: (r['totalSuiteMs'] as num).toDouble(),
+          status: r['status'] as String,
+          measurementSource: r['measurementSource'] as String,
         ),
       );
     });
@@ -72,6 +78,8 @@ void main() {
               .toDouble(),
           scalingEfficiency: (r['scalingEfficiency'] as num).toDouble(),
           totalSuiteMs: (r['totalSuiteMs'] as num).toDouble(),
+          status: r['status'] as String,
+          measurementSource: r['measurementSource'] as String,
         ),
       );
     });
@@ -92,6 +100,8 @@ void main() {
               .toDouble(),
           scalingEfficiency: (r['scalingEfficiency'] as num).toDouble(),
           totalSuiteMs: (r['totalSuiteMs'] as num).toDouble(),
+          status: r['status'] as String,
+          measurementSource: r['measurementSource'] as String,
         ),
       );
     });
@@ -112,11 +122,21 @@ void main() {
               .toDouble(),
           scalingEfficiency: (r['scalingEfficiency'] as num).toDouble(),
           totalSuiteMs: (r['totalSuiteMs'] as num).toDouble(),
+          status: r['status'] as String,
+          measurementSource: r['measurementSource'] as String,
         ),
       );
     });
   });
 
-  tearDownAll(() {
+  test('unsupported operations fail instead of returning synthetic data', () {
+    expect(
+      () => IsolateBenchmark.measureIsolateScaling(
+        isolateCount: 1,
+        dataSizeBytes: 1024,
+        opType: 'not-crypto',
+      ),
+      throwsArgumentError,
+    );
   });
 }

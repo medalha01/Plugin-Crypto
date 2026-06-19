@@ -11,6 +11,7 @@ void main() {
   m?.startZone('zone08', 'X.509');
 
   late Uint8List testCertPem;
+  late String expectedSerial;
 
   setUpAll(() async {
     final result = await Process.run('openssl', [
@@ -35,6 +36,18 @@ void main() {
 
     final pemFile = File('/tmp/test_cert.pem');
     testCertPem = await pemFile.readAsBytes();
+    final serialResult = await Process.run('openssl', [
+      'x509',
+      '-in',
+      pemFile.path,
+      '-noout',
+      '-serial',
+    ]);
+    expect(serialResult.exitCode, 0, reason: '${serialResult.stderr}');
+    expectedSerial = (serialResult.stdout as String)
+        .trim()
+        .replaceFirst('serial=', '')
+        .toUpperCase();
 
     await File('/tmp/test_key.pem').delete();
     await File('/tmp/test_cert.pem').delete();
@@ -56,14 +69,24 @@ void main() {
       expect(cert.issuer, equals(cert.subject));
     });
 
-    test('rawDer matches input PEM bytes', () {
+    test('rawDer is canonical DER regardless of PEM input', () {
       final cert = PluginCryptoAPI.instance.parseX509Certificate(testCertPem);
-      expect(cert.rawDer, equals(testCertPem));
+      expect(cert.rawDer, isNotEmpty);
+      expect(cert.rawDer.first, equals(0x30));
+      expect(cert.rawDer, isNot(equals(testCertPem)));
+      final reparsed =
+          PluginCryptoAPI.instance.parseX509Certificate(cert.rawDer);
+      expect(reparsed.rawDer, cert.rawDer);
+      expect(reparsed.serialNumber, cert.serialNumber);
+      expect(reparsed.subject, cert.subject);
     });
 
-    test('serialNumber is non-empty', () {
+    test('serialNumber contains the actual hexadecimal serial', () {
       final cert = PluginCryptoAPI.instance.parseX509Certificate(testCertPem);
       expect(cert.serialNumber.isNotEmpty, isTrue);
+      expect(cert.serialNumber, isNot('present'));
+      expect(RegExp(r'^[0-9A-F]+$').hasMatch(cert.serialNumber), isTrue);
+      expect(cert.serialNumber, expectedSerial);
     });
   });
 

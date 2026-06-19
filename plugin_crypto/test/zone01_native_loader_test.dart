@@ -11,6 +11,31 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
   group('Native Loader', () {
+    test('candidate order prefers override and executable directory', () {
+      final candidates = nativeLibraryCandidates(
+        'crypto',
+        operatingSystem: 'linux',
+        executablePath: '/opt/app/plugin_crypto',
+        currentDirectory: '/workspace/plugin_crypto',
+        environment: const {'PLUGIN_CRYPTO_NATIVE_DIR': '/pinned'},
+      );
+      expect(candidates.first, contains('/pinned'));
+      expect(candidates[1], contains('/opt/app'));
+      expect(candidates.last, 'libcrypto.so.4');
+    });
+
+    test('unsupported platforms have no library candidates', () {
+      expect(
+        nativeLibraryCandidates(
+          'crypto',
+          operatingSystem: 'plan9',
+          executablePath: '/app',
+          currentDirectory: '/workspace',
+        ),
+        isEmpty,
+      );
+    });
+
     test('loadCrypto returns valid DynamicLibrary', () {
       expect(() => loadCrypto(), returnsNormally);
     });
@@ -36,7 +61,7 @@ void main() {
       final api = PluginCryptoAPI.instance;
       final version = api.getOpenSSLVersion();
       expect(version, isNotEmpty);
-      expect(version, contains('OpenSSL'));
+      expect(version, startsWith('OpenSSL 4.'));
     });
 
     test('same version on second call', () {

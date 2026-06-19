@@ -36,7 +36,7 @@ class X509Operations {
       }
       if (x509 == nullptr) _fail('PEM_read_bio_X509 / d2i_X509_bio');
       try {
-        return _parseX509(x509, certData);
+        return _parseX509(x509);
       } finally {
         _b.x509Free(x509);
       }
@@ -94,7 +94,7 @@ class X509Operations {
   }
 
 
-  X509Certificate _parseX509(X509 x509, Uint8List raw) {
+  X509Certificate _parseX509(X509 x509) {
     final subj = _b.x509GetSubjectName(x509);
     final iss = _b.x509GetIssuerName(x509);
     String nameOneLine(Pointer<Void> name) {
@@ -111,8 +111,7 @@ class X509Operations {
     final subjStr = nameOneLine(subj);
     final issStr = nameOneLine(iss);
 
-    final sn = _b.x509GetSerialNumber(x509);
-    final snStr = sn != nullptr ? 'present' : '(unavailable)';
+    final snStr = _serialNumberHex(x509);
 
     DateTime notBefore = DateTime(1970);
     DateTime notAfter = DateTime(1970);
@@ -133,9 +132,38 @@ class X509Operations {
       serialNumber: snStr,
       notBefore: notBefore,
       notAfter: notAfter,
-      rawDer: raw,
+      rawDer: _toDer(x509),
       extensions: _parseExt(x509),
     );
+  }
+
+  String _serialNumberHex(X509 x509) {
+    final serial = _b.x509GetSerialNumber(x509);
+    if (serial == nullptr) return '(unavailable)';
+    final bn = _b.asn1IntegerToBn(serial, nullptr);
+    if (bn == nullptr) _fail('ASN1_INTEGER_to_BN');
+    try {
+      final hex = _b.bnToHex(bn);
+      if (hex == nullptr) _fail('BN_bn2hex');
+      try {
+        return hex.toDartString().toUpperCase();
+      } finally {
+        _b.cryptoFree(hex.cast(), nullptr, 0);
+      }
+    } finally {
+      _b.bnFree(bn);
+    }
+  }
+
+  Uint8List _toDer(X509 x509) {
+    final bio = _b.bioNew(_b.bioSMem());
+    if (bio == nullptr) _fail('BIO_new(X509 DER)');
+    try {
+      _check1(_b.i2dX509Bio(bio, x509), 'i2d_X509_bio');
+      return bioToBytes(_b, bio);
+    } finally {
+      _b.bioFree(bio);
+    }
   }
 
   X509ParsedExtensions? _parseExt(X509 x509) {

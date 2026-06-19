@@ -4,11 +4,18 @@
 library;
 
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:ffi/ffi.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_crypto/plugin_crypto.dart';
+import 'package:plugin_crypto/src/crypto/utils/bio_utils.dart';
+import 'package:plugin_crypto/src/crypto/utils/openssl_error.dart';
+import 'package:plugin_crypto/src/crypto/constants.dart';
+import 'package:plugin_crypto/src/ffi/native_loader.dart';
+import 'package:plugin_crypto/src/ffi/openssl_bindings.dart';
 
 
 /// Represents an uncompressed EC point (x, y) on a prime field curve.
@@ -20,6 +27,78 @@ class _EcPoint {
 
 
 PluginCryptoAPI get _api => PluginCryptoAPI.instance;
+final OpenSslBindings _bindings =
+    OpenSslBindings.create(loadCrypto(), loadSsl());
+
+BigInt _privateKeyParameter(String privateKeyPem, String parameter) {
+  final bio = bioFromData(
+    _bindings,
+    Uint8List.fromList(utf8.encode(privateKeyPem)),
+  );
+  expect(bio, isNot(nullptr));
+  try {
+    final key = _bindings.pemReadBioPrivateKey(bio, nullptr, nullptr, nullptr);
+    expect(key, isNot(nullptr));
+    try {
+      final output = calloc<BIGNUM>();
+      final name = parameter.toNativeUtf8();
+      try {
+        expect(_bindings.evpPkeyGetBnParam(key, name, output), 1);
+        expect(output.value, isNot(nullptr));
+        final hex = _bindings.bnToHex(output.value);
+        expect(hex, isNot(nullptr));
+        try {
+          return BigInt.parse(hex.toDartString(), radix: 16);
+        } finally {
+          _bindings.cryptoFree(hex.cast(), nullptr, 0);
+          _bindings.bnFree(output.value);
+        }
+      } finally {
+        calloc.free(name);
+        calloc.free(output);
+      }
+    } finally {
+      _bindings.evpPkeyFree(key);
+    }
+  } finally {
+    _bindings.bioFree(bio);
+  }
+}
+
+BigInt _curveCofactor(String curve) {
+  final name = curve.toNativeUtf8();
+  try {
+    final nid = _bindings.objSn2nid(name.cast());
+    expect(nid, isNot(0));
+    final group = _bindings.ecGroupNewByCurveName(nid);
+    expect(group, isNot(nullptr));
+    try {
+      final cofactor = _bindings.bnNew();
+      expect(cofactor, isNot(nullptr));
+      try {
+        expect(_bindings.ecGroupGetCofactor(group, cofactor, nullptr), 1);
+        final hex = _bindings.bnToHex(cofactor);
+        expect(hex, isNot(nullptr));
+        try {
+          return BigInt.parse(hex.toDartString(), radix: 16);
+        } finally {
+          _bindings.cryptoFree(hex.cast(), nullptr, 0);
+        }
+      } finally {
+        _bindings.bnFree(cofactor);
+      }
+    } finally {
+      _bindings.ecGroupFree(group);
+    }
+  } finally {
+    calloc.free(name);
+  }
+}
+
+bool _satisfiesRsaFactorDistance(BigInt p, BigInt q, int modulusBits) {
+  final bound = BigInt.two.pow(modulusBits ~/ 2 - 100);
+  return (p - q).abs() > bound;
+}
 
 /// Base64-decode the body of a PEM string (stripping header/footer).
 Uint8List _pemDecode(String pem) {
@@ -330,17 +409,17 @@ void main() {
       timeout: const Timeout(Duration(minutes: 2)),
     );
 
-    test('The FIPS |p-q| bound: 2^(nbits/2-100) for 2048-bit = 2^924', () {
-      final bound = BigInt.two.pow(2048 ~/ 2 - 100);
-      expect(
-        bound.bitLength,
-        greaterThan(900),
-        reason: '|p-q| bound for RSA-2048 should be ~2^924',
-      );
-
+    test('RSA-2048 actual factors satisfy the FIPS |p-q| bound', () {
       final kp = _api.generateRsaKeyPair(2048);
-      expect(kp.publicKeyPem, isNotEmpty);
-      expect(kp.privateKeyPem, isNotEmpty);
+      final p = _privateKeyParameter(kp.privateKeyPem, 'rsa-factor1');
+      final q = _privateKeyParameter(kp.privateKeyPem, 'rsa-factor2');
+      expect(_satisfiesRsaFactorDistance(p, q, 2048), isTrue);
+    });
+
+    test('RSA factor-distance assertion rejects deliberately close factors', () {
+      final p = BigInt.two.pow(1023) + BigInt.from(12345);
+      final q = p + BigInt.one;
+      expect(_satisfiesRsaFactorDistance(p, q, 2048), isFalse);
     });
   });
 
@@ -463,26 +542,11 @@ void main() {
 
   group('V6: EC cofactor (P-256/P-384/P-521)', () {
     test('P-256 cofactor h = 1', () {
-      const h = 1;
-      expect(h, equals(1));
-
-      final kp = _api.generateEcKeyPair('prime256v1');
-      final msg = Uint8List.fromList(utf8.encode('cofactor test'));
-      final sig = _api.sign(
-        msg,
-        Uint8List.fromList(kp.privateKeyPem.codeUnits),
-      );
-      final ok = _api.verify(
-        msg,
-        Uint8List.fromList(kp.publicKeyPem.codeUnits),
-        sig,
-      );
-      expect(ok, isTrue, reason: 'P-256 sign/verify must succeed');
+      expect(_curveCofactor('prime256v1'), BigInt.one);
     });
 
     test('P-384 cofactor h = 1', () {
-      const h = 1;
-      expect(h, equals(1));
+      expect(_curveCofactor('secp384r1'), BigInt.one);
 
       final kp = _api.generateEcKeyPair('secp384r1');
       final msg = Uint8List.fromList(utf8.encode('cofactor 384'));
@@ -499,8 +563,7 @@ void main() {
     });
 
     test('P-521 cofactor h = 1', () {
-      const h = 1;
-      expect(h, equals(1));
+      expect(_curveCofactor('secp521r1'), BigInt.one);
 
       final kp = _api.generateEcKeyPair('secp521r1');
       final msg = Uint8List.fromList(utf8.encode('cofactor 521'));
@@ -519,55 +582,59 @@ void main() {
 
   group('V7: ML-KEM-768 public key size (FIPS 203)', () {
     test(
-      'ML-KEM-768 public key DER == 1184 bytes',
-      () async {
-        final genResult = await Process.run('openssl', [
-          'genpkey',
-          '-algorithm',
-          'ML-KEM-768',
-          '-outform',
-          'DER',
-          '-out',
-          '/tmp/v7_mlkem768.der',
-        ]);
-
-        if (genResult.exitCode != 0) {
-          print('ML-KEM-768 not supported: ${genResult.stderr}');
-          expect(true, isTrue); // Graceful skip
+      'ML-KEM-768 public key DER == 1206 bytes',
+      () {
+        final ctx = _bindings.evpPkeyCtxNewId(nidMlKem768, nullptr);
+        if (ctx == nullptr) {
+          markTestSkipped(
+              'ML-KEM-768 EVP_PKEY_CTX creation failed');
           return;
         }
 
-        final keyFile = File('/tmp/v7_mlkem768.der');
-        final pubFile = File('/tmp/v7_mlkem768_pub.der');
         try {
-          if (!await keyFile.exists()) return;
+          if (_bindings.evpPkeyKeygenInit(ctx) != 1) {
+            markTestSkipped('ML-KEM-768 keygen init failed');
+            return;
+          }
 
-          final pubResult = await Process.run('openssl', [
-            'pkey',
-            '-in',
-            '/tmp/v7_mlkem768.der',
-            '-inform',
-            'DER',
-            '-pubout',
-            '-outform',
-            'DER',
-            '-out',
-            '/tmp/v7_mlkem768_pub.der',
-          ]);
+          final ppkey = calloc<EVP_PKEY>();
+          try {
+            if (_bindings.evpPkeyKeygen(ctx, ppkey) != 1) {
+              markTestSkipped('ML-KEM-768 keygen failed');
+              return;
+            }
 
-          if (pubResult.exitCode == 0 && await pubFile.exists()) {
-            final pubDer = await pubFile.readAsBytes();
-            expect(
-              pubDer.length,
-              equals(1206),
-              reason:
-                  'ML-KEM-768 pubkey DER must be exactly 1206 bytes '
-                  '(OpenSSL 4.0.0 SPKI wrapper). Got ${pubDer.length} bytes.',
-            );
+            final pubBio = _bindings.bioNew(_bindings.bioSMem());
+            if (pubBio == nullptr) {
+              markTestSkipped('ML-KEM-768 BIO creation failed');
+              return;
+            }
+
+            try {
+              if (_bindings.pemWriteBioPubkey(pubBio, ppkey.value) != 1) {
+                markTestSkipped(
+                    'ML-KEM-768 PEM write failed: '
+                    '${getOpenSslError(_bindings)}');
+                return;
+              }
+
+              final pem = bioToString(_bindings, pubBio);
+              final der = _pemDecode(pem);
+              expect(
+                der.length,
+                equals(1206),
+                reason:
+                    'ML-KEM-768 pubkey DER must be exactly 1206 bytes '
+                    '(OpenSSL 4.0.0 SPKI wrapper). Got ${der.length} bytes.',
+              );
+            } finally {
+              _bindings.bioFree(pubBio);
+            }
+          } finally {
+            calloc.free(ppkey);
           }
         } finally {
-          if (await keyFile.exists()) await keyFile.delete();
-          if (await pubFile.exists()) await pubFile.delete();
+          _bindings.evpPkeyCtxFree(ctx);
         }
       },
     );
@@ -575,55 +642,59 @@ void main() {
 
   group('V8: ML-DSA-44 public key size (FIPS 204)', () {
     test(
-      'ML-DSA-44 public key DER == 1312 bytes',
-      () async {
-        final genResult = await Process.run('openssl', [
-          'genpkey',
-          '-algorithm',
-          'ML-DSA-44',
-          '-outform',
-          'DER',
-          '-out',
-          '/tmp/v8_mldsa44.der',
-        ]);
-
-        if (genResult.exitCode != 0) {
-          print('ML-DSA-44 not supported: ${genResult.stderr}');
-          expect(true, isTrue); // Graceful skip
+      'ML-DSA-44 public key DER == 1334 bytes',
+      () {
+        final ctx = _bindings.evpPkeyCtxNewId(nidMlDsa44, nullptr);
+        if (ctx == nullptr) {
+          markTestSkipped(
+              'ML-DSA-44 EVP_PKEY_CTX creation failed');
           return;
         }
 
-        final keyFile = File('/tmp/v8_mldsa44.der');
-        final pubFile = File('/tmp/v8_mldsa44_pub.der');
         try {
-          if (!await keyFile.exists()) return;
+          if (_bindings.evpPkeyKeygenInit(ctx) != 1) {
+            markTestSkipped('ML-DSA-44 keygen init failed');
+            return;
+          }
 
-          final pubResult = await Process.run('openssl', [
-            'pkey',
-            '-in',
-            '/tmp/v8_mldsa44.der',
-            '-inform',
-            'DER',
-            '-pubout',
-            '-outform',
-            'DER',
-            '-out',
-            '/tmp/v8_mldsa44_pub.der',
-          ]);
+          final ppkey = calloc<EVP_PKEY>();
+          try {
+            if (_bindings.evpPkeyKeygen(ctx, ppkey) != 1) {
+              markTestSkipped('ML-DSA-44 keygen failed');
+              return;
+            }
 
-          if (pubResult.exitCode == 0 && await pubFile.exists()) {
-            final pubDer = await pubFile.readAsBytes();
-            expect(
-              pubDer.length,
-              equals(1334),
-              reason:
-                  'ML-DSA-44 pubkey DER must be exactly 1334 bytes '
-                  '(OpenSSL 4.0.0 SPKI wrapper). Got ${pubDer.length} bytes.',
-            );
+            final pubBio = _bindings.bioNew(_bindings.bioSMem());
+            if (pubBio == nullptr) {
+              markTestSkipped('ML-DSA-44 BIO creation failed');
+              return;
+            }
+
+            try {
+              if (_bindings.pemWriteBioPubkey(pubBio, ppkey.value) != 1) {
+                markTestSkipped(
+                    'ML-DSA-44 PEM write failed: '
+                    '${getOpenSslError(_bindings)}');
+                return;
+              }
+
+              final pem = bioToString(_bindings, pubBio);
+              final der = _pemDecode(pem);
+              expect(
+                der.length,
+                equals(1334),
+                reason:
+                    'ML-DSA-44 pubkey DER must be exactly 1334 bytes '
+                    '(OpenSSL 4.0.0 SPKI wrapper). Got ${der.length} bytes.',
+              );
+            } finally {
+              _bindings.bioFree(pubBio);
+            }
+          } finally {
+            calloc.free(ppkey);
           }
         } finally {
-          if (await keyFile.exists()) await keyFile.delete();
-          if (await pubFile.exists()) await pubFile.delete();
+          _bindings.evpPkeyCtxFree(ctx);
         }
       },
     );

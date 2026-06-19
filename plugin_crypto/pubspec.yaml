@@ -1,5 +1,5 @@
 name: plugin_crypto
-description: "Flutter FFI plugin wrapping OpenSSL for crypto operations on Linux, Android, and iOS."
+description: "Flutter FFI plugin wrapping OpenSSL for crypto operations on Linux and Android."
 version: 0.0.1
 homepage: https://github.com/medalha01/Plugin-Crypto
 repository: https://github.com/medalha01/Plugin-Crypto
@@ -51,9 +51,6 @@ flutter:
       android:
         ffiPlugin: true
         package: com.tcc.plugin_crypto
-        pluginClass: PluginCryptoPlugin
-      ios:
-        ffiPlugin: true
         pluginClass: PluginCryptoPlugin
       linux:
         ffiPlugin: true

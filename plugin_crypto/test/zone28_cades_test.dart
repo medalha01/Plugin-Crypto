@@ -2,6 +2,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -85,6 +86,7 @@ void main() {
       expect(signed, isNotEmpty);
       expect(signed, isA<Uint8List>());
       expect(signed.length, greaterThan(100));
+      expect(signed.first, 0x30, reason: 'CAdES output must be DER');
     });
 
     test('produces DER output for small data', () {
@@ -108,6 +110,41 @@ void main() {
     });
   });
 
+  group('CAdES-BES structure', () {
+    test('contains SigningCertificateV2 and parses independently', () async {
+      final (:certPem, :keyPem) = _createRsaCert();
+      final signed = cms.cmsSignCadesBes(
+        Uint8List.fromList(utf8.encode('CAdES structure test')),
+        certPem,
+        keyPem,
+      );
+      final directory = await Directory.systemTemp.createTemp('cades-bes-');
+      final file = File('${directory.path}/signature.der');
+      try {
+        await file.writeAsBytes(signed);
+        final result = await Process.run('openssl', [
+          'cms',
+          '-cmsout',
+          '-inform',
+          'DER',
+          '-in',
+          file.path,
+          '-print',
+        ]);
+        expect(result.exitCode, 0, reason: '${result.stderr}');
+        final output = '${result.stdout}';
+        expect(
+          output.contains('signingCertificateV2') ||
+              output.contains('1.2.840.113549.1.9.16.2.47'),
+          isTrue,
+          reason: 'ESS SigningCertificateV2 attribute is required for CAdES-BES',
+        );
+      } finally {
+        await directory.delete(recursive: true);
+      }
+    });
+  });
+
   group('cmsSignCades signed attributes', () {
     test('signs with signingTime and messageDigest (defaults)', () {
       final (:certPem, :keyPem) = _createRsaCert();
@@ -120,38 +157,36 @@ void main() {
       expect(verified, isTrue);
     });
 
-    test('signs with signingTime only (messageDigest disabled)', () {
+    test('rejects disabling mandatory messageDigest', () {
       final (:certPem, :keyPem) = _createRsaCert();
       final data = Uint8List.fromList(utf8.encode('signing time only'));
 
-      final signed = cms.cmsSignCades(
-        data,
-        certPem,
-        keyPem,
-        addSigningTime: true,
-        addMessageDigest: false,
+      expect(
+        () => cms.cmsSignCades(
+          data,
+          certPem,
+          keyPem,
+          addSigningTime: true,
+          addMessageDigest: false,
+        ),
+        throwsArgumentError,
       );
-
-      expect(signed, isNotEmpty);
-      final verified = api.cmsVerify(signed, trustedCert: certPem);
-      expect(verified, isTrue);
     });
 
-    test('signs with both signed attrs disabled', () {
+    test('rejects disabling mandatory CAdES attributes', () {
       final (:certPem, :keyPem) = _createRsaCert();
       final data = Uint8List.fromList(utf8.encode('no signed attrs'));
 
-      final signed = cms.cmsSignCades(
-        data,
-        certPem,
-        keyPem,
-        addSigningTime: false,
-        addMessageDigest: false,
+      expect(
+        () => cms.cmsSignCades(
+          data,
+          certPem,
+          keyPem,
+          addSigningTime: false,
+          addMessageDigest: false,
+        ),
+        throwsArgumentError,
       );
-
-      expect(signed, isNotEmpty);
-      final verified = api.cmsVerify(signed, trustedCert: certPem);
-      expect(verified, isTrue);
     });
   });
 
